@@ -3,7 +3,7 @@ services:
   backend:
     build: ./backend
     volumes:
-      - pdf_storage:/app/pdf_storage
+      - pdf_storage:/app/data/pdfs
       - sqlite_db_volume:/app
     ports:
       - "8000:8000"
