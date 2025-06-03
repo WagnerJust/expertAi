@@ -2,13 +2,15 @@ version: '3.8'
 services:
   backend:
     build: ./backend
+    working_dir: /app
     volumes:
       - pdf_storage:/app/data/pdfs
-      - sqlite_db_volume:/app
+      - sqlite_db_volume:/app/db_data
+      - /Users/justin/LLMS/Contexts/PromptEngineering/:/app/initial_corpus:ro
     ports:
       - "8000:8000"
     environment:
-      - DB_URL=sqlite:///./local_database.sqlite
+      - DB_URL=sqlite:///./db_data/local_database.sqlite
   frontend:
     build: ./frontend
     ports:

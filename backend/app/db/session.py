@@ -10,7 +10,9 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # Call this to create tables
 
 def init_db():
+    print("[init_db] Starting DB initialization...")
     Base.metadata.create_all(bind=engine)
+    print("[init_db] DB initialization complete.")
 
 def get_db() -> Generator[Session, None, None]:
     db = SessionLocal()
