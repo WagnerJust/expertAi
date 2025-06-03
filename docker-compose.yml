@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  backend:
+    build: ./backend
+    volumes:
+      - pdf_storage:/app/pdf_storage
+      - sqlite_db_volume:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_URL=sqlite:///./local_database.sqlite
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+volumes:
+  pdf_storage:
+  sqlite_db_volume:
+  vector_db_volume:
