@@ -14,6 +14,9 @@ class Collection(CollectionBase):
     class Config:
         orm_mode = True
 
+class CollectionUpdate(BaseModel):
+    name: Optional[str] = None
+
 class PDFDocumentBase(BaseModel):
     filename: str
     title: Optional[str]
