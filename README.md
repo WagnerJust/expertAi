@@ -35,6 +35,32 @@ docker compose up --build -d
 # Frontend (React): http://localhost:3000
 ```
 
+---
+
+## Installing `llama-cpp-python` 0.3.9 on Apple Silicon (M Series Macs)
+
+To install `llama-cpp-python` version 0.3.9 on an M series Mac, you must:
+
+1. **Clear any previous build caches** to avoid conflicts:
+   ```sh
+   poetry cache clear pypi --all
+   poetry run pip cache purge
+   ```
+
+2. **Set the required environment variables** before installing:
+   ```sh
+   source $(poetry env info --path)/bin/activate
+   export CMAKE_ARGS="-DLLAMA_METAL=ON -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_APPLE_SILICON_PROCESSOR=arm64"
+   export FORCE_CMAKE=1
+   ```
+
+3. **Install dependencies with Poetry**:
+   ```sh
+   poetry install
+   ```
+
+---
+
 ## API Overview
 
 - `POST /api/v1/collections` — Create collection
