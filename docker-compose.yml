@@ -5,7 +5,7 @@ services:
     working_dir: /app
     volumes:
       - pdf_storage:/app/data/pdfs
-      - sqlite_db_volume:/app/db_data
+      - ./backend/db_data:/app/db_data  # Bind mount to local db_data directory
       - /Users/justin/LLMS/Contexts/PromptEngineering/:/app/initial_corpus:ro
     ports:
       - "8000:8000"
@@ -19,5 +19,4 @@ services:
       - backend
 volumes:
   pdf_storage:
-  sqlite_db_volume:
   vector_db_volume:
