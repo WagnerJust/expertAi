@@ -4,7 +4,7 @@
 
 **Context Reminder for Copilot:**
 * Project: Local PDF RAG Q&A Web App.
-* Backend: **Python (target 3.11)**, FastAPI, Poetry, SQLAlchemy (SQLite).
+* Backend: **Python (target 3.11)**, FastAPI, Venv, SQLAlchemy (SQLite).
 * Frontend: React (Vite).
 * Vector DB: **ChromaDB**
 * Container: Docker, Docker Compose.
@@ -13,24 +13,25 @@
 **Tasks for Coding Assistant (Copilot):**
 
 **0. Python Environment Update to 3.11:**
-    * **Update Poetry Configuration:**
-        * Modify `backend/pyproject.toml` to specify Python 3.11:
-          ```toml
-          [tool.poetry.dependencies]
-          python = "^3.11"
-          # ... other dependencies
-          ```
-    * **Update Poetry Environment:**
+    * **Update Python Environment:**
         * Ensure Python 3.11 is installed and accessible (e.g., via `pyenv global 3.11.x` or by having it in your PATH).
-        * Run `poetry env use 3.11` to point Poetry to the correct Python interpreter.
-        * Run `poetry lock` (to resolve dependencies for 3.11 without upgrading them unless necessary) or `poetry update` (to upgrade dependencies to versions compatible with 3.11).
+        * Create a new virtual environment for Python 3.11:
+          ```bash
+          python3.11 -m venv venv
+          source venv/bin/activate
+          ```
+        * Update or create `backend/requirements.txt` to specify all dependencies compatible with Python 3.11.
+        * Install dependencies:
+          ```bash
+          pip install -r requirements.txt
+          ```
     * **Update Backend Dockerfile:**
         * Modify `backend/Dockerfile` to use a Python 3.11 base image (e.g., `FROM python:3.11-slim` or `FROM python:3.11-bookworm`).
     * **Verify Existing Functionality:**
         * After updating, run all existing tests from Sprints 1 and 2 (`pytest`) to ensure no regressions are introduced by the Python version change.
         * Manually test starting the backend service locally and via Docker.
     * **TFD:** While this is an environment task, the verification step (running existing tests) is crucial.
-    * **Acceptance Criteria:** `pyproject.toml` specifies Python 3.11. Poetry environment uses Python 3.11. `backend/Dockerfile` uses a Python 3.11 base image. All existing tests pass. Backend service runs correctly with Python 3.11.
+    * **Acceptance Criteria:** `requirements.txt` specifies all dependencies. Virtual environment uses Python 3.11. `backend/Dockerfile` uses a Python 3.11 base image. All existing tests pass. Backend service runs correctly with Python 3.11.
 
 **1. Text Processing & Chunking (Backend):**
     * Implement `backend/app/rag_components/chunker.py`:

@@ -16,7 +16,7 @@ Below is the outline for a project. I need it separated into detailed sprints fo
 
 Develop a robust, entirely local Retrieval-Augmented Generation (RAG) system. The system will be a **fully functional web application with a decoupled frontend (React) and Python backend**, enabling users to:1. Manage collections of PDF documents (uploading files or adding via links).2. Select a specific PDF collection for context.3. Ask questions and receive answers derived exclusively from the chosen PDF collection.
 
-The system must be containerized using Docker for portability and ease of deployment, project dependencies managed using **Poetry**, and all source code managed in a **Git repository**. Development must follow a **Test-Focused Development (TFD)** approach.
+The system must be containerized using Docker for portability and ease of deployment, project dependencies managed using **Python venv and requirements.txt**, and all source code managed in a **Git repository**. Development must follow a **Test-Focused Development (TFD)** approach.
 
 
 
@@ -244,7 +244,7 @@ project_root/
 
 * Well-organized React frontend code.
 
-* **`pyproject.toml` (for Poetry)** and any lock files.
+* **`requirements.txt` (for backend Python dependencies)** and any lock files.
 
 * **Comprehensive test suite** (unit, integration, and relevant E2E tests) demonstrating TFD.
 
@@ -258,7 +258,7 @@ project_root/
 
 3. **Comprehensive Documentation:**
 
-* **Setup & Installation:** Including Git repo cloning, Docker build/run, and Poetry environment setup.
+* **Setup & Installation:** Including Git repo cloning, Docker build/run, and Python venv environment setup.
 
 * **Hardware Adaptability Guide:**
 

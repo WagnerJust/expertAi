@@ -1,7 +1,7 @@
 "Assisting with a Local PDF RAG Q&A Web App. Key context:
 
 Tech:
-Backend: Python, FastAPI, Poetry, SQLAlchemy (SQLite), Local RAG (Sentence Transformers, Vector DB, GGUF LLM)
+Backend: Python, FastAPI, venv, requirements.txt, SQLAlchemy (SQLite), Local RAG (Sentence Transformers, Vector DB, GGUF LLM)
 Frontend: React (Vite)
 Container: Docker, Docker Compose
 Methodology: Waterfall "sprints," Test-Focused Development (TFD) is critical.

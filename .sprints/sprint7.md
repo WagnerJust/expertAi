@@ -37,7 +37,17 @@
         * Cloning the Git repository.
         * Docker installation prerequisites.
         * How to build and run the application using `docker-compose`.
-        * Poetry environment setup for backend development (`poetry install`).
+        * Backend environment setup for development:
+            * Ensure Python 3.11 is installed and accessible.
+            * Create a new virtual environment:
+              ```bash
+              python3.11 -m venv venv
+              source venv/bin/activate
+              ```
+            * Install dependencies:
+              ```bash
+              pip install -r requirements.txt
+              ```
         * Node.js/npm/yarn setup for frontend development (`npm install` or `yarn install`).
         * Initial corpus directory setup.
     * **`docs/USAGE_INSTRUCTIONS.md`:**

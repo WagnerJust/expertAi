@@ -14,10 +14,18 @@
     * Create `README.md` with project title and objective.
     * **Acceptance Criteria:** Git repo initialized; `.gitignore` and `README.md` exist.
 
-2.  **Backend Setup (Python/FastAPI & Poetry):**
-    * Create `backend/`; `cd backend; poetry init` (interactive setup).
-    * Add dependencies: `poetry add fastapi uvicorn pydantic sqlalchemy "python-multipart[standard]" alembic psycopg2-binary` (or other DB driver if not SQLite initially for robustness, though SQLite is specified for simplicity).
-        * *Note: For strictly SQLite as per requirements, `psycopg2-binary` might not be needed if sticking to SQLite only. `sqlalchemy` will handle SQLite with its built-in driver.*
+2.  **Backend Setup (Python/FastAPI & venv):**
+    * Create `backend/`.
+    * Initialize a Python 3.11 virtual environment:
+      ```bash
+      python3.11 -m venv venv
+      source venv/bin/activate
+      ```
+    * Create `backend/requirements.txt` and add dependencies: `fastapi`, `uvicorn`, `pydantic`, `sqlalchemy`, `python-multipart`, `alembic`, and `pytest` for testing.
+    * Install dependencies:
+      ```bash
+      pip install -r requirements.txt
+      ```
     * Create `backend/app/` and subdirectories: `core/`, `apis/v1/`, `services/`, `models/`, `db/`, `rag_components/`, `utils/`. Add `__init__.py` to all.
     * `backend/app/main.py`: Basic FastAPI app, root health check endpoint (`/`).
     * `backend/app/core/config.py`: Settings class (e.g., `Settings(BaseSettings)` from Pydantic-settings) for initial PDF dir, DB URL (`sqlite:///./local_database.sqlite`).
@@ -30,7 +38,7 @@
         * Generic API response models (e.g., `MsgDetail`).
     * `backend/app/models/db_models.py`: SQLAlchemy ORM models mirroring schemas (Collection, PDFDocument, QueryHistory, AnswerFeedback). Define relationships. `QueryHistory` could store question, answer, context, sources, and link to `AnswerFeedback`.
     * `backend/app/db/session.py` (or similar): SQLAlchemy engine, `SessionLocal`, `Base` for ORM models. Function to create initial DB tables (e.g., `Base.metadata.create_all(bind=engine)`). (Alembic for migrations can be set up here too, add `alembic` to Poetry).
-    * **Acceptance Criteria:** Backend structure created; Poetry configured; FastAPI app runs with `/` endpoint; Pydantic/SQLAlchemy models defined; DB session setup; initial DB schema can be created.
+    * **Acceptance Criteria:** Backend structure created; FastAPI app runs with `/` endpoint; Pydantic/SQLAlchemy models defined; DB session setup; initial DB schema can be created.
 
 3.  **Frontend Setup (React):**
     * Create `frontend/`.
@@ -50,13 +58,14 @@
     * **Acceptance Criteria:** Clear plan for API endpoints and their Pydantic models; understanding of how FastAPI will generate the spec.
 
 5.  **Docker Setup (Initial):**
-    * `backend/Dockerfile`: For Python FastAPI app (e.g., `python:3.10-slim`, copy app, install dependencies via Poetry: `poetry install --no-dev`).
+    * `backend/Dockerfile`: For Python FastAPI app (e.g., `python:3.11-slim`, copy app, install dependencies via `pip install -r requirements.txt`).
     * `frontend/Dockerfile`: For React app (multi-stage: Node build, Nginx serve).
     * `{CURRENT_WORKSPACE_DIR}/docker-compose.yml`: Services for `backend`, `frontend`. Define named volumes for `pdf_storage`, `sqlite_db_volume`, `vector_db_volume`. Map backend port (e.g., 8000) and frontend port (e.g., 3000 or 80).
     * **Acceptance Criteria:** Dockerfiles exist; `docker-compose.yml` defines services and volumes.
 
 6.  **Test Setup (TFD):**
-    * Backend: `poetry add --group dev pytest pytest-cov httpx pytest-asyncio`. Create `backend/tests/` with `conftest.py`, `unit/`, and `integration/` subdirectories.
+    * Backend: Add `pytest`, `pytest-cov`, `httpx`, `pytest-asyncio` to `backend/requirements.txt` for development/testing.
+    * Create `backend/tests/` with `conftest.py`, `unit/`, and `integration/` subdirectories.
     * Write a simple unit test for the root health check endpoint in `backend/app/main.py` (e.g., checking status code and response).
     * Frontend: Ensure testing libraries (e.g., Jest, Vitest, React Testing Library) are set up (default with Vite/CRA). Write a basic rendering test for the `App.jsx` component.
     * **Acceptance Criteria:** Test directories and configs in place; basic tests pass for backend health check and frontend App component.

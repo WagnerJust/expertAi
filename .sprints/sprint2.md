@@ -29,7 +29,7 @@
     * **Acceptance Criteria:** PDF files are correctly stored in the designated Docker volume; metadata (title derived from filename, filename, collection association, initial status) is stored in SQLite.
 
 3.  **PDF Processing - Text Extraction (Backend):**
-    * Integrate a PDF parsing library (e.g., `PyMuPDF/fitz` or `pdfminer.six`) into `pdf_ingestion_service.py`. Add the chosen library to `pyproject.toml` (`poetry add pymupdf`).
+    * Integrate a PDF parsing library (e.g., `PyMuPDF/fitz` or `pdfminer.six`) into `pdf_ingestion_service.py`. Add the chosen library to `backend/requirements.txt`.
     * Implement `extract_text_from_pdf(pdf_path: Path) -> tuple[str, int] | None`: Extracts all readable textual content and total page count. Return `None` or raise specific exception on failure.
     * Implement robust error handling for diverse PDF structures, layouts, encodings. Log errors and update PDF status in DB to "extraction_failed".
     * Consider a simple function to make the filename a "title" (e.g., "My_Document_Name.pdf" -> "My Document Name").

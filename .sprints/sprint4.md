@@ -46,6 +46,18 @@
     * Ensure all necessary models (embedding, LLM if packaged) are either baked into the Docker image (if small enough and licensed appropriately) or correctly downloaded/mounted during container startup. For LLMs, it's often better to mount them from the host due to size.
     * Configure environment variables in `docker-compose.yml` for all paths (PDFs, SQLite DB, Vector DB, LLM models, embedding models) and ensure they are read by `backend/app/core/config.py`.
     * Review resource allocations (memory, CPU) for the backend service in `docker-compose.yml`, especially considering LLM and embedding model requirements.
+    * **Backend Python Environment Setup:**
+        * Ensure Python 3.11 is installed and accessible (e.g., via `pyenv global 3.11.x` or by having it in your PATH).
+        * Create a new virtual environment for Python 3.11:
+          ```bash
+          python3.11 -m venv venv
+          source venv/bin/activate
+          ```
+        * Update or create `backend/requirements.txt` to specify all dependencies compatible with Python 3.11.
+        * Install dependencies:
+          ```bash
+          pip install -r requirements.txt
+          ```
     * **Acceptance Criteria:** Backend Docker configuration is finalized, uses environment variables for paths, and manages model files effectively. `docker-compose up` successfully starts the fully configured backend.
 
 6.  **Generate/Update & Document OpenAPI Specification:**
@@ -56,4 +68,8 @@
 
 7.  **Frontend Basic Structure & Routing (React):**
     * Set up basic page components in `frontend/src/pages/`: `HomePage.jsx`, `ManageCollectionsPage.jsx`, `CollectionChatPage.jsx`.
-    * Implement basic routing using `react-router
+    * Implement basic routing using `react-router-dom` in `frontend/src/App.jsx`:
+        * `/`: `HomePage`
+        * `/collections`: `ManageCollectionsPage`
+        * `/collections/:collectionId`: `CollectionChatPage`
+    * **Acceptance Criteria:** Frontend basic structure and routing are set up, allowing navigation between the home page, collections management, and chat page for a specific collection.
