@@ -5,7 +5,7 @@ services:
     working_dir: /app
     volumes:
       - pdf_storage:/app/data/pdfs
-      - ./backend/db_data:/app/db_data  # Bind mount to local db_data directory
+      - db_volume:/app/db_data
       - ${INITIAL_CORPUS_PATH}:/app/initial_corpus:ro
       - vector_db_volume:/app/data/vector_store  # ChromaDB storage
     ports:
@@ -34,3 +34,4 @@ volumes:
   pdf_storage:
   vector_db_volume:
   ollama_data:
+  db_volume:
