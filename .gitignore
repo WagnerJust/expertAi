@@ -8,6 +8,7 @@ venv/
 .env
 .env.*
 *.sqlite3
+*.sqlite
 .pytest_cache/
 
 # Node
