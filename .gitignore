@@ -8,6 +8,7 @@ venv/
 .env
 .env.*
 *.sqlite3
+.pytest_cache/
 
 # Node
 node_modules/
@@ -26,6 +27,23 @@ build/
 # Docker
 *.pid
 *.log
+
+# Data & Storage (Runtime generated files)
+backend/data/vector_store/
+backend/db_data/
+backend/*.log
+backend/server.log
+backend/mock_llm.log
+
+# Models (Large binary files)
+models/*.gguf
+models/*.bin
+*.gguf
+
+# ChromaDB Vector Database
+**/chroma_db/
+**/*.bin
+**/chroma.sqlite3
 
 # VSCode
 .vscode/

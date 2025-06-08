@@ -9,6 +9,7 @@ from .chunker import Chunk
 from ..core.config import settings
 import logging
 import os
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -38,12 +39,16 @@ def get_or_create_collection(collection_name: str):
     Uses pre-computed embeddings (embedding_function=None).
     """
     client = initialize_vector_store()
-    collection = client.get_or_create_collection(
-        name=collection_name,
-        embedding_function=None  # We provide pre-computed embeddings
-    )
-    logger.info(f"Retrieved/created collection: {collection_name}")
-    return collection
+    try:
+        collection = client.get_or_create_collection(
+            name=collection_name,
+            embedding_function=None  # We provide pre-computed embeddings
+        )
+        logger.info(f"Retrieved/created collection: {collection_name}")
+        return collection
+    except Exception as e:
+        logger.error(f"Failed to get/create collection {collection_name}: {str(e)}")
+        raise
 
 def add_chunks_to_vector_store(
     chroma_collection_name: str,
@@ -60,38 +65,44 @@ def add_chunks_to_vector_store(
         logger.warning("No chunks provided to add to vector store")
         return
     
-    collection = get_or_create_collection(chroma_collection_name)
-    
-    documents = []
-    embeddings = []
-    metadatas = []
-    ids = []
-    
-    for chunk, embedding in chunks_with_embeddings:
-        documents.append(chunk.text)
-        embeddings.append(embedding)
+    try:
+        collection = get_or_create_collection(chroma_collection_name)
         
-        # Convert chunk metadata to ChromaDB-compatible format
-        metadata = {
-            "article_title": chunk.article_title,
-            "source_pdf": chunk.source_pdf_filename,
-            "page_numbers": str(chunk.page_numbers),  # Convert list to string for Chroma
-            "collection_id": chunk.collection_id,
-            "pdf_db_id": chunk.pdf_db_id,
-            "chunk_sequence_id": chunk.chunk_sequence_id
-        }
-        metadatas.append(metadata)
-        ids.append(chunk.id)
-    
-    # Add to collection
-    collection.add(
-        documents=documents,
-        embeddings=embeddings,
-        metadatas=metadatas,
-        ids=ids
-    )
-    
-    logger.info(f"Added {len(chunks_with_embeddings)} chunks to collection '{chroma_collection_name}'")
+        documents = []
+        embeddings = []
+        metadatas = []
+        ids = []
+        
+        for chunk, embedding in chunks_with_embeddings:
+            documents.append(chunk.text)
+            embeddings.append(embedding)
+            
+            # Convert chunk metadata to ChromaDB-compatible format
+            # Use JSON serialization for complex data structures
+            metadata = {
+                "article_title": chunk.article_title,
+                "source_pdf": chunk.source_pdf_filename,
+                "page_numbers": json.dumps(chunk.page_numbers),  # Better serialization
+                "collection_id": chunk.collection_id,
+                "pdf_db_id": chunk.pdf_db_id,
+                "chunk_sequence_id": chunk.chunk_sequence_id
+            }
+            metadatas.append(metadata)
+            ids.append(chunk.id)
+        
+        # Add to collection with better error handling
+        collection.add(
+            documents=documents,
+            embeddings=embeddings,
+            metadatas=metadatas,
+            ids=ids
+        )
+        
+        logger.info(f"Added {len(chunks_with_embeddings)} chunks to collection '{chroma_collection_name}'")
+        
+    except Exception as e:
+        logger.error(f"Failed to add chunks to vector store: {str(e)}")
+        raise
 
 def search_relevant_chunks(
     chroma_collection_name: str,
@@ -132,16 +143,22 @@ def search_relevant_chunks(
             for i in range(len(results['documents'][0])):
                 metadata = results['metadatas'][0][i]
                 
-                # Convert page_numbers back from string to list (safe parsing)
+                # Convert page_numbers back from JSON string to list (safe parsing)
                 try:
                     page_numbers_str = metadata.get('page_numbers', '[]')
-                    # Use ast.literal_eval for safe evaluation or json.loads
-                    import ast
-                    page_numbers = ast.literal_eval(page_numbers_str)
+                    # Use json.loads for proper JSON parsing
+                    page_numbers = json.loads(page_numbers_str)
                     if not isinstance(page_numbers, list):
                         page_numbers = []
-                except (ValueError, SyntaxError):
-                    page_numbers = []
+                except (json.JSONDecodeError, ValueError):
+                    # Fallback for old format using ast.literal_eval
+                    try:
+                        import ast
+                        page_numbers = ast.literal_eval(page_numbers_str)
+                        if not isinstance(page_numbers, list):
+                            page_numbers = []
+                    except (ValueError, SyntaxError):
+                        page_numbers = []
                 
                 chunk = Chunk(
                     id=results['ids'][0][i],
