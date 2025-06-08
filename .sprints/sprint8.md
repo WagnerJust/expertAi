@@ -10,7 +10,7 @@
         * Ensure clarity in service definitions, port mappings, and volume definitions.
         * Use environment variables for all configurable settings that might change between environments (even if only local development for now, it's good practice). Consider a `.env` file for `docker compose`.
         * Set sensible default resource limits (CPU, memory) for services, especially the backend service running the LLM, to prevent it from consuming all system resources on less powerful machines. Document how users might adjust these.
-        * Ensure named volumes are used correctly for all persistent data (SQLite DB, PDF files, Vector DB, LLM models if downloaded into a volume).
+        * Ensure named volumes are used correctly for all persistent data (SQLite DB, PDF files, Vector DB, LLM models if downloaded into a volume). Named volumes eliminate file permission issues.
     * **Acceptance Criteria:** Dockerfiles and `docker compose.yml` are optimized, well-commented, and use best practices for local deployment. The application builds and runs reliably using `docker compose`.
 
 2.  **Build and Run Scripts:**

@@ -38,7 +38,7 @@
 - **Initial Corpus**: Production-ready ingestion with file copying, duplicate checking, and comprehensive logging
 - **Error Handling**: Structured logging, input validation, graceful failure recovery
 - **Security Features**: File size limits (10MB upload, 100MB download), content-type validation, URL format checking
-- **Docker Integration**: Proper volume mounts for PDF storage and SQLite DB persistence
+- **Docker Integration**: Named volumes for PDF storage and SQLite DB persistence (no permission issues)
 
 ### Testing & Quality
 - **Unit Tests**: Complete coverage for all service logic (collections, PDF ingestion, text extraction)
@@ -64,7 +64,7 @@
 - [x] Comprehensive error handling and logging throughout
 - [x] All tests pass (`pytest --cov`) with improved coverage
 - [x] OpenAPI spec available at `/openapi.json` with updated schemas
-- [x] PDF files and DB properly persisted in Docker volumes
+- [x] PDF files and DB properly persisted in Docker named volumes (eliminates permission issues)
 - [x] Production-ready code with security features and validation
 
 ### Sprint 2 Acceptance Criteria ✅ ALL MET

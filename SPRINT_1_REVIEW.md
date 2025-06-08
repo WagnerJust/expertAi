@@ -1,10 +1,10 @@
 # SPRINT 1 REVIEW
 
 ## System Architecture & Technology Stack
-- **Backend:** Python 3.10, FastAPI, SQLAlchemy, Pydantic, Poetry, Alembic, SQLite (local dev), Docker
+- **Backend:** Python 3.10, FastAPI, SQLAlchemy, Pydantic, Poetry, Alembic, SQLite (Docker volume), Docker
 - **Frontend:** React (Vite), JavaScript, Docker, Nginx (for static serve)
 - **Testing:** Pytest (backend), Vitest/React Testing Library (frontend)
-- **Containerization:** Docker, docker compose
+- **Containerization:** Docker, docker compose with named volumes for data persistence
 - **PDF/Embedding/LLM:** (To be selected in future sprints)
 
 ## API Contract Design

@@ -78,11 +78,11 @@
             * `delete_pdf_chunks_from_vector_store(chroma_collection_name: str, pdf_db_id: int)`:
                 * Get the Chroma collection.
                 * Delete items matching the `pdf_db_id` metadata: `collection.delete(where={"pdf_db_id": pdf_db_id})`.
-    * Ensure ChromaDB data is persisted using Docker volumes (map `CHROMA_DB_PATH` parent dir).
+    * Ensure ChromaDB data is persisted using Docker named volumes (map `CHROMA_DB_PATH` parent dir). Use named volumes to avoid permission issues.
     * Update `pdf_ingestion_service.py` to call `add_chunks_to_vector_store`.
     * **TFD:**
         * Unit/integration tests in `backend/tests/unit/rag_components/test_vector_store_interface.py` for ChromaDB operations: collection creation/getting, add, search (with metadata filtering for `collection_id`), delete by `collection_id` metadata, delete by `pdf_db_id` metadata.
-    * **Acceptance Criteria:** Text chunks, embeddings, and metadata stored in ChromaDB. Data queryable and filterable by metadata (`collection_id`). Persistence via Docker volumes. ChromaDB is used as specified.
+    * **Acceptance Criteria:** Text chunks, embeddings, and metadata stored in ChromaDB. Data queryable and filterable by metadata (`collection_id`). Persistence via Docker named volumes (no permission issues). ChromaDB is used as specified.
 
 **4. Local LLM Integration via Dedicated Docker Service (Backend & Docker Compose):**
     * **Update `docker compose.yml`:** Add new service `llm-service` for `ghcr.io/abetlen/llama-cpp-python:latest` (ports, volumes for models, `MODEL` env var) as previously detailed.
@@ -125,7 +125,7 @@
     * Ingest sample PDFs into a collection (triggering full RAG pipeline including ChromaDB storage).
     * Ask a question; show backend logs (API call to `llm-service`, ChromaDB interaction if logged) and final answer with citations.
     * Ask an unanswerable question; show "I don't know."
-* Show SQLite `QueryHistory`. Show ChromaDB data location in Docker volume.
+* Show SQLite `QueryHistory`. Show ChromaDB data location in Docker named volume.
 * Brief document/slide explaining:
     * Python 3.11 update.
     * Embedding model.

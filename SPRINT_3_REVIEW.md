@@ -34,7 +34,7 @@
   - `chromadb>=1.0.12` for vector storage
   - `httpx>=0.28.1` for LLM service communication
 - **Docker Services**: Multi-service architecture with proper networking
-- **Volume Persistence**: ChromaDB data and models properly persisted
+- **Volume Persistence**: ChromaDB data and models properly persisted with named volumes for zero-permission issues
 
 ### API Integration Points
 - **PDF Processing Pipeline**: Seamless integration with existing ingestion service
@@ -111,12 +111,14 @@ response = await generate_answer_from_context(
 
 ### Docker Services Architecture
 ```yaml
-# Multi-service Docker architecture
+# Multi-service Docker architecture with named volumes
 services:
   backend:
     build: ./backend  # Python 3.11-slim
     volumes:
-      - vector_db_volume:/app/data/vector_store  # ChromaDB persistence
+      - pdf_storage:/app/data/pdfs              # Named volume for PDFs
+      - db_volume:/app/db_data                  # Named volume for database (eliminates permission issues)
+      - vector_db_volume:/app/data/vector_store # Named volume for ChromaDB persistence
     depends_on:
       - llm-service
 
@@ -126,6 +128,12 @@ services:
       - "11434:11434"
     volumes:
       - ollama_data:/root/.ollama  # Model storage
+
+volumes:
+  pdf_storage:
+  vector_db_volume:
+  ollama_data:
+  db_volume:  # Database storage volume (Docker-managed, no permission issues)
 ```
 
 ### Performance Optimizations
@@ -273,7 +281,7 @@ The Sprint 3 implementation provides a complete RAG foundation:
 - **Performance Optimized**: Model caching and batch processing
 - **Security Hardened**: Safe parsing and input validation
 - **Well Tested**: Comprehensive unit and integration test coverage
-- **Production Ready**: Docker services with proper persistence and networking
+- **Production Ready**: Docker services with named volume persistence and networking (no permission issues)
 
 ### Deliverable Achieved 🎉
 **CEO Demonstration Ready**: Complete RAG pipeline from PDF ingestion through question answering with:

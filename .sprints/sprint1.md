@@ -60,8 +60,8 @@
 5.  **Docker Setup (Initial):**
     * `backend/Dockerfile`: For Python FastAPI app (e.g., `python:3.11-slim`, copy app, install dependencies via `pip install -r requirements.txt`).
     * `frontend/Dockerfile`: For React app (multi-stage: Node build, Nginx serve).
-    * `{CURRENT_WORKSPACE_DIR}/docker compose.yml`: Services for `backend`, `frontend`. Define named volumes for `pdf_storage`, `sqlite_db_volume`, `vector_db_volume`. Map backend port (e.g., 8000) and frontend port (e.g., 3000 or 80).
-    * **Acceptance Criteria:** Dockerfiles exist; `docker compose.yml` defines services and volumes.
+    * `{CURRENT_WORKSPACE_DIR}/docker compose.yml`: Services for `backend`, `frontend`. Define named volumes for `pdf_storage`, `db_volume` (for SQLite database), `vector_db_volume`, `ollama_data`. Use named volumes instead of bind mounts to eliminate permission issues with SQLite database files.
+    * **Acceptance Criteria:** Dockerfiles exist; `docker compose.yml` defines services and named volumes (no permission issues).
 
 6.  **Test Setup (TFD):**
     * Backend: Add `pytest`, `pytest-cov`, `httpx`, `pytest-asyncio` to `backend/requirements.txt` for development/testing.

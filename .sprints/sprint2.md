@@ -1,4 +1,6 @@
-# Sprint 2: Core Backend Logic - PDF Ingestion & Initial Collection Management 🗂️
+# Sprint 2: Core Backend Logic - PDF Ingestion & Initial Collection * Show the CEO:
+    * The structure of the stored PDF files within the Docker named volume (e.g., using `docker exec -it <backend_container_id> ls /app/data/pdfs/<collection_id>`).
+    * The SQLite database entries for collections and PDF documents (e.g., using a DB browser or `docker exec -it <backend_container_id> sqlite3 /app/db_data/local_database.sqlite "SELECT * FROM collections;"`). Database uses named volume storage with proper permissions.agement 🗂️
 
 **Goal:** Implement backend functionality for creating and managing collections, uploading/linking PDFs, performing basic text extraction, and storing PDF files and their metadata.
 
@@ -23,7 +25,7 @@
         * `download_pdf_from_url(collection_id: int, url: str, filename: str) -> Path | None`: Downloads PDF from URL, saves similarly. Handle potential download errors.
         * `add_pdf_record_to_db(db: Session, title: str, filename: str, file_path: str, collection_id: int, status: str = "pending") -> db_models.PDFDocument`: Creates a `PDFDocument` record in the database.
     * Update `backend/app/core/config.py` to include `PDF_STORAGE_PATH`.
-    * Ensure `docker compose.yml` correctly mounts the `pdf_storage` volume to the path specified in `config.py`.
+    * Ensure `docker compose.yml` correctly mounts the `pdf_storage` named volume to the path specified in `config.py`. Use named volumes for both PDF storage and SQLite database to eliminate file permission issues.
     * **TFD:**
         * Unit tests in `backend/tests/unit/services/test_pdf_ingestion_service.py` for file storing logic (mocking `UploadFile` and file system operations), URL downloading (mocking `httpx` requests), and DB record creation.
     * **Acceptance Criteria:** PDF files are correctly stored in the designated Docker volume; metadata (title derived from filename, filename, collection association, initial status) is stored in SQLite.
