@@ -27,6 +27,7 @@ This project is a full-stack application with a FastAPI backend and a React fron
 
 ## Quickstart
 
+### Option 1: Standard Docker Setup
 ```sh
 # Start all services (backend, frontend)
 docker compose up --build -d
@@ -35,29 +36,28 @@ docker compose up --build -d
 # Frontend (React): http://localhost:3000
 ```
 
----
+### Option 2: Tailscale-Enabled Setup 🌐
+Perfect for accessing your app from anywhere on your Tailscale network!
 
-## Installing `llama-cpp-python` 0.3.9 on Apple Silicon (M Series Macs)
+```sh
+# Production mode with Tailscale support
+./start-tailscale.sh
 
-To install `llama-cpp-python` version 0.3.9 on an M series Mac, you must:
+# Development mode with hot-reload and Tailscale support
+./start-dev-tailscale.sh
 
-1. **Clear any previous build caches** to avoid conflicts:
-   ```sh
-   poetry cache clear pypi --all
-   poetry run pip cache purge
-   ```
+# Check Tailscale connectivity and service health
+./tailscale-health-check.sh
+```
 
-2. **Set the required environment variables** before installing:
-   ```sh
-   source $(poetry env info --path)/bin/activate
-   export CMAKE_ARGS="-DLLAMA_METAL=ON -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_APPLE_SILICON_PROCESSOR=arm64"
-   export FORCE_CMAKE=1
-   ```
+**Tailscale Access URLs:**
+- Frontend: `http://[your-tailscale-ip]:3000`
+- Backend API: `http://[your-tailscale-ip]:8000`
+- API Documentation: `http://[your-tailscale-ip]:8000/docs`
 
-3. **Install dependencies with Poetry**:
-   ```sh
-   poetry install
-   ```
+**Prerequisites for Tailscale:**
+- [Tailscale](https://tailscale.com) installed and connected
+- Docker and Docker Compose installed
 
 ---
 
@@ -73,14 +73,6 @@ To install `llama-cpp-python` version 0.3.9 on an M series Mac, you must:
 - `DELETE /api/v1/pdfs/{pdf_id}` — Delete PDF
 
 See `/openapi.json` for full schema.
-
-## Testing
-
-```sh
-cd backend
-poetry install --no-root
-poetry run pytest --cov
-```
 
 ## Volumes
 - PDF files: `pdf_storage` (mounted to `/app/data/pdfs` in backend container)

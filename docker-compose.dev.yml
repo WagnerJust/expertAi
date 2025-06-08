@@ -5,31 +5,41 @@ services:
     working_dir: /app
     volumes:
       - pdf_storage:/app/data/pdfs
-      - ./backend/db_data:/app/db_data  # Bind mount to local db_data directory
+      - ./backend/db_data:/app/db_data
       - /Users/justin/LLMS/Contexts/PromptEngineering/:/app/initial_corpus:ro
-      - vector_db_volume:/app/data/vector_store  # ChromaDB storage
+      - vector_db_volume:/app/data/vector_store
+      - ./backend:/app  # Mount source code for development
     ports:
-      - "0.0.0.0:8000:8000"  # Bind to all interfaces for Tailscale access
+      - "0.0.0.0:8000:8000"
     environment:
       - DB_URL=sqlite:///./db_data/local_database.sqlite
     depends_on:
       - llm-service
+    command: ["python", "start_server.py"]  # Use development server with hot reload
 
   llm-service:
     image: ollama/ollama:latest
     ports:
-      - "0.0.0.0:11434:11434"  # Bind to all interfaces for Tailscale access
+      - "0.0.0.0:11434:11434"
     volumes:
       - ollama_data:/root/.ollama
     environment:
       - OLLAMA_HOST=0.0.0.0:11434
 
-  frontend:
-    build: ./frontend
+  frontend-dev:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules  # Prevent overwriting node_modules
     ports:
-      - "0.0.0.0:3000:80"  # Bind to all interfaces for Tailscale access
+      - "0.0.0.0:3000:3000"
+    environment:
+      - VITE_API_URL=http://backend:8000
     depends_on:
       - backend
+
 volumes:
   pdf_storage:
   vector_db_volume:

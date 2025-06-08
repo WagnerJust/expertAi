@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     CHROMA_DEFAULT_COLLECTION_NAME: str = "rag_documents"
     
     # LLM Service settings (Ollama service)
-    LLM_SERVICE_URL: str = "http://localhost:11434"
+    LLM_SERVICE_URL: str = "http://llm-service:11434"  # Use Docker service name
     LLM_COMPLETION_ENDPOINT: str = "/api/generate"
 
 settings = Settings()
