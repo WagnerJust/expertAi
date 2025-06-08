@@ -28,7 +28,7 @@ I'm working on Sprint 3 of a PDF RAG Q&A system. The project is a FastAPI backen
 
 1. **LLM Service Setup**: 
    - Download and configure a small model (TinyLlama or similar)
-   - Update docker-compose.yml with proper model mounting
+   - Update docker compose.yml with proper model mounting
    - Test LLM service connectivity
 
 2. **Integration Testing**:
@@ -53,14 +53,14 @@ I'm working on Sprint 3 of a PDF RAG Q&A system. The project is a FastAPI backen
 │   │   └── models/schemas.py (Q&A API schemas)
 │   ├── migrate_database.py (completed migration)
 │   └── requirements.txt (updated dependencies)
-└── docker-compose.yml (needs LLM model config)
+└── docker compose.yml (needs LLM model config)
 ```
 
 ## Main Tasks to Complete:
 
 ### 1. LLM Service Configuration
 - Download a small GGUF model for testing (e.g., TinyLlama-1.1B-Chat)
-- Update docker-compose.yml LLM service configuration
+- Update docker compose.yml LLM service configuration
 - Test LLM service health endpoint
 
 ### 2. End-to-End Testing

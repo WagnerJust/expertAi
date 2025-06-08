@@ -85,7 +85,7 @@
     * **Acceptance Criteria:** Text chunks, embeddings, and metadata stored in ChromaDB. Data queryable and filterable by metadata (`collection_id`). Persistence via Docker volumes. ChromaDB is used as specified.
 
 **4. Local LLM Integration via Dedicated Docker Service (Backend & Docker Compose):**
-    * **Update `docker-compose.yml`:** Add new service `llm-service` for `ghcr.io/abetlen/llama-cpp-python:latest` (ports, volumes for models, `MODEL` env var) as previously detailed.
+    * **Update `docker compose.yml`:** Add new service `llm-service` for `ghcr.io/abetlen/llama-cpp-python:latest` (ports, volumes for models, `MODEL` env var) as previously detailed.
     * **Implement `backend/app/rag_components/llm_handler.py`:**
         * Add `httpx` to `pyproject.toml`.
         * Client for `llm-service` (HTTP requests to `/v1/completions` or similar).
@@ -93,7 +93,7 @@
         * `generate_answer_from_context(prompt_text: str, max_tokens: int = 500) -> str | None`.
     * **Hardware Adaptability (LLM Service):** Document GGUF model configuration for the Docker service.
     * **TFD:** Unit tests for `llm_handler.py` mocking `httpx` calls.
-    * **Acceptance Criteria:** `llm-service` in `docker-compose.yml` starts. `llm_handler.py` communicates with it. LLM Docker service configuration documented.
+    * **Acceptance Criteria:** `llm-service` in `docker compose.yml` starts. `llm_handler.py` communicates with it. LLM Docker service configuration documented.
 
 **5. RAG Service - Core Q&A Logic (Backend):**
     * Implement `backend/app/services/rag_service.py`:
@@ -121,7 +121,7 @@
 
 * Confirmation that the backend development environment and Docker image now use Python 3.11 and all previous tests pass.
 * A demonstration (API calls or script):
-    * Show `docker-compose.yml` with `llm-service` and backend configured for ChromaDB. Start services.
+    * Show `docker compose.yml` with `llm-service` and backend configured for ChromaDB. Start services.
     * Ingest sample PDFs into a collection (triggering full RAG pipeline including ChromaDB storage).
     * Ask a question; show backend logs (API call to `llm-service`, ChromaDB interaction if logged) and final answer with citations.
     * Ask an unanswerable question; show "I don't know."

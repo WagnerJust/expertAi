@@ -42,10 +42,10 @@
         * Write integration tests for the re-indexing API endpoint. This test might be longer running and require careful setup (e.g., a small collection with a few PDFs) and verification of the vector store state before and after.
     * **Acceptance Criteria:** The manual re-indexing API endpoint is fully implemented and tested, successfully clearing and reprocessing all documents in a specified collection.
 
-5.  **Finalize Backend Dockerfile & docker-compose.yml:**
+5.  **Finalize Backend Dockerfile & docker compose.yml:**
     * Ensure all necessary models (embedding, LLM if packaged) are either baked into the Docker image (if small enough and licensed appropriately) or correctly downloaded/mounted during container startup. For LLMs, it's often better to mount them from the host due to size.
-    * Configure environment variables in `docker-compose.yml` for all paths (PDFs, SQLite DB, Vector DB, LLM models, embedding models) and ensure they are read by `backend/app/core/config.py`.
-    * Review resource allocations (memory, CPU) for the backend service in `docker-compose.yml`, especially considering LLM and embedding model requirements.
+    * Configure environment variables in `docker compose.yml` for all paths (PDFs, SQLite DB, Vector DB, LLM models, embedding models) and ensure they are read by `backend/app/core/config.py`.
+    * Review resource allocations (memory, CPU) for the backend service in `docker compose.yml`, especially considering LLM and embedding model requirements.
     * **Backend Python Environment Setup:**
         * Ensure Python 3.11 is installed and accessible (e.g., via `pyenv global 3.11.x` or by having it in your PATH).
         * Create a new virtual environment for Python 3.11:
@@ -58,7 +58,7 @@
           ```bash
           pip install -r requirements.txt
           ```
-    * **Acceptance Criteria:** Backend Docker configuration is finalized, uses environment variables for paths, and manages model files effectively. `docker-compose up` successfully starts the fully configured backend.
+    * **Acceptance Criteria:** Backend Docker configuration is finalized, uses environment variables for paths, and manages model files effectively. `docker compose up` successfully starts the fully configured backend.
 
 6.  **Generate/Update & Document OpenAPI Specification:**
     * Ensure FastAPI (`/openapi.json`) auto-generates an accurate and complete specification for all implemented V1 API endpoints.

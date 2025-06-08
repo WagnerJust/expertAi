@@ -23,7 +23,7 @@
         * `download_pdf_from_url(collection_id: int, url: str, filename: str) -> Path | None`: Downloads PDF from URL, saves similarly. Handle potential download errors.
         * `add_pdf_record_to_db(db: Session, title: str, filename: str, file_path: str, collection_id: int, status: str = "pending") -> db_models.PDFDocument`: Creates a `PDFDocument` record in the database.
     * Update `backend/app/core/config.py` to include `PDF_STORAGE_PATH`.
-    * Ensure `docker-compose.yml` correctly mounts the `pdf_storage` volume to the path specified in `config.py`.
+    * Ensure `docker compose.yml` correctly mounts the `pdf_storage` volume to the path specified in `config.py`.
     * **TFD:**
         * Unit tests in `backend/tests/unit/services/test_pdf_ingestion_service.py` for file storing logic (mocking `UploadFile` and file system operations), URL downloading (mocking `httpx` requests), and DB record creation.
     * **Acceptance Criteria:** PDF files are correctly stored in the designated Docker volume; metadata (title derived from filename, filename, collection association, initial status) is stored in SQLite.
@@ -53,7 +53,7 @@
         * Check if a "default" collection exists by a predefined name (from `config.py`). If not, create it.
         * Scan the configurable initial corpus directory (from `config.py`, e.g., `/Users/justin/LLMS/Contexts/PromptEngineering/`).
         * For each PDF found, add it to the "default" collection using the existing `pdf_ingestion_service` functions (as if it were uploaded). This means creating a DB record. Text extraction not triggered by this initial scan unless explicitly designed so (can be part of re-indexing later).
-    * Make the initial corpus directory path mountable in `docker-compose.yml` for flexibility.
+    * Make the initial corpus directory path mountable in `docker compose.yml` for flexibility.
     * **TFD:** Test this initial ingestion. This might be a manual test or a test that mocks the directory structure and `pdf_ingestion_service` calls.
     * **Acceptance Criteria:** On first run or via a command, PDFs from the specified initial corpus directory are registered into a default collection in the database.
 

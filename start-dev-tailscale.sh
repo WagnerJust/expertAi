@@ -17,11 +17,11 @@ fi
 
 # Stop any existing containers
 echo "🛑 Stopping existing containers..."
-docker-compose -f docker-compose.dev.yml down
+docker compose -f docker compose.dev.yml down
 
 # Build and start services in development mode
 echo "🏗️  Building and starting development services..."
-docker-compose -f docker-compose.dev.yml up --build -d
+docker compose -f docker compose.dev.yml up --build -d
 
 # Wait for services to be ready
 echo "⏳ Waiting for services to start..."
@@ -29,7 +29,7 @@ sleep 10
 
 # Check service status
 echo "🔍 Checking service status..."
-docker-compose -f docker-compose.dev.yml ps
+docker compose -f docker compose.dev.yml ps
 
 echo ""
 echo "✅ Development services started successfully!"
@@ -52,5 +52,5 @@ echo "🔥 Development mode features:"
 echo "   - Hot-reload enabled for both frontend and backend"
 echo "   - Source code changes will automatically restart services"
 echo ""
-echo "📋 To view logs: docker-compose -f docker-compose.dev.yml logs -f"
-echo "🛑 To stop: docker-compose -f docker-compose.dev.yml down"
+echo "📋 To view logs: docker compose -f docker compose.dev.yml logs -f"
+echo "🛑 To stop: docker compose -f docker compose.dev.yml down"

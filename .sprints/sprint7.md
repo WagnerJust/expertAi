@@ -36,7 +36,7 @@
     * **`docs/SETUP_INSTALLATION.md`:**
         * Cloning the Git repository.
         * Docker installation prerequisites.
-        * How to build and run the application using `docker-compose`.
+        * How to build and run the application using `docker compose`.
         * Backend environment setup for development:
             * Ensure Python 3.11 is installed and accessible.
             * Create a new virtual environment:

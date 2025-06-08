@@ -6,19 +6,19 @@
 
 1.  **Dockerization Finalization & Optimization:**
     * Review and optimize all `Dockerfile`s (backend and frontend) for image size and build speed (e.g., ensure effective use of layer caching, multi-stage builds, removing unnecessary build dependencies from final images, minimizing copied files).
-    * Review and optimize `docker-compose.yml`:
+    * Review and optimize `docker compose.yml`:
         * Ensure clarity in service definitions, port mappings, and volume definitions.
-        * Use environment variables for all configurable settings that might change between environments (even if only local development for now, it's good practice). Consider a `.env` file for `docker-compose`.
+        * Use environment variables for all configurable settings that might change between environments (even if only local development for now, it's good practice). Consider a `.env` file for `docker compose`.
         * Set sensible default resource limits (CPU, memory) for services, especially the backend service running the LLM, to prevent it from consuming all system resources on less powerful machines. Document how users might adjust these.
         * Ensure named volumes are used correctly for all persistent data (SQLite DB, PDF files, Vector DB, LLM models if downloaded into a volume).
-    * **Acceptance Criteria:** Dockerfiles and `docker-compose.yml` are optimized, well-commented, and use best practices for local deployment. The application builds and runs reliably using `docker-compose`.
+    * **Acceptance Criteria:** Dockerfiles and `docker compose.yml` are optimized, well-commented, and use best practices for local deployment. The application builds and runs reliably using `docker compose`.
 
 2.  **Build and Run Scripts:**
     * Create simple shell scripts (`.sh` for Linux/macOS) and batch scripts (`.bat` for Windows) in the `project_root/scripts/` directory to automate common tasks:
-        * `build.sh`/`build.bat`: Runs `docker-compose build`.
-        * `start.sh`/`start.bat`: Runs `docker-compose up -d`.
-        * `stop.sh`/`stop.bat`: Runs `docker-compose down`.
-        * `logs.sh`/`logs.bat`: Runs `docker-compose logs -f` (or allows specifying a service, e.g., `logs.sh backend`).
+        * `build.sh`/`build.bat`: Runs `docker compose build`.
+        * `start.sh`/`start.bat`: Runs `docker compose up -d`.
+        * `stop.sh`/`stop.bat`: Runs `docker compose down`.
+        * `logs.sh`/`logs.bat`: Runs `docker compose logs -f` (or allows specifying a service, e.g., `logs.sh backend`).
         * `reset_data.sh`/`reset_data.bat` (Optional but helpful): A script to stop containers and remove Docker volumes, allowing for a clean restart (with user confirmation).
     * Ensure these scripts are executable and work correctly on their respective platforms.
     * **Acceptance Criteria:** User-friendly build and run scripts are created, tested, and functional for common operations on both Linux/macOS and Windows.

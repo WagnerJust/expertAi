@@ -17,11 +17,11 @@ fi
 
 # Stop any existing containers
 echo "🛑 Stopping existing containers..."
-docker-compose down
+docker compose down
 
 # Build and start services
 echo "🏗️  Building and starting services..."
-docker-compose up --build -d
+docker compose up --build -d
 
 # Wait for services to be ready
 echo "⏳ Waiting for services to start..."
@@ -29,7 +29,7 @@ sleep 10
 
 # Check service status
 echo "🔍 Checking service status..."
-docker-compose ps
+docker compose ps
 
 echo ""
 echo "✅ Services started successfully!"
@@ -48,5 +48,5 @@ if [ ! -z "$TAILSCALE_IP" ]; then
     echo "   Ollama Service (Tailscale): http://$TAILSCALE_IP:11434"
 fi
 echo ""
-echo "📋 To view logs: docker-compose logs -f"
-echo "🛑 To stop: docker-compose down"
+echo "📋 To view logs: docker compose logs -f"
+echo "🛑 To stop: docker compose down"

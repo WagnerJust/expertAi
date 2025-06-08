@@ -220,7 +220,7 @@ project_root/
 
 │ └── ... # Other frontend configurations (babel.config.js, .eslintrc.js, etc.)
 
-├── docker-compose.yml # Orchestrates all services (backend, frontend, vector DB)
+├── docker compose.yml # Orchestrates all services (backend, frontend, vector DB)
 
 ├── .gitignore # Specifies intentionally untracked files that Git should ignore
 
@@ -252,7 +252,7 @@ project_root/
 
 * **`Dockerfile` (potentially separate for backend and frontend, or a multi-stage build).**
 
-* **`docker-compose.yml`** for orchestrating backend, frontend (if served separately), vector database persistence, and local database (for metadata/history/feedback) persistence.
+* **`docker compose.yml`** for orchestrating backend, frontend (if served separately), vector database persistence, and local database (for metadata/history/feedback) persistence.
 
 * Build and Run Scripts (`.sh` or `.bat`).
 

@@ -54,8 +54,8 @@
 6.  **Frontend Dockerfile Finalization:**
     * Ensure the `frontend/Dockerfile` correctly builds the React application for production (e.g., `npm run build` or `yarn build`).
     * Ensure it serves the static build artifacts efficiently (e.g., using Nginx).
-    * Verify that `docker-compose.yml` correctly builds and runs the frontend service, exposing the necessary port (e.g., port 80 or 3000 for development, but the Nginx in Docker usually serves on 80).
-    * **Acceptance Criteria:** Frontend Docker build is optimized for serving a production version of the React app. `docker-compose up` correctly serves the frontend.
+    * Verify that `docker compose.yml` correctly builds and runs the frontend service, exposing the necessary port (e.g., port 80 or 3000 for development, but the Nginx in Docker usually serves on 80).
+    * **Acceptance Criteria:** Frontend Docker build is optimized for serving a production version of the React app. `docker compose up` correctly serves the frontend.
 
 **Deliverable for CEO (Sprint 6):** 💬
 

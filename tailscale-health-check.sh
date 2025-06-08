@@ -35,7 +35,7 @@ else
 fi
 
 # Check if containers are running
-if docker-compose ps | grep -q "Up"; then
+if docker compose ps | grep -q "Up"; then
     echo "✅ Docker containers are running"
     
     # Test frontend accessibility

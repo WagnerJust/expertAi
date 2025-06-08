@@ -4,7 +4,7 @@
 - **Backend:** Python 3.10, FastAPI, SQLAlchemy, Pydantic, Poetry, Alembic, SQLite (local dev), Docker
 - **Frontend:** React (Vite), JavaScript, Docker, Nginx (for static serve)
 - **Testing:** Pytest (backend), Vitest/React Testing Library (frontend)
-- **Containerization:** Docker, docker-compose
+- **Containerization:** Docker, docker compose
 - **PDF/Embedding/LLM:** (To be selected in future sprints)
 
 ## API Contract Design
@@ -37,7 +37,7 @@
 ## Demonstration Checklist
 - [x] Backend service starts: `uvicorn backend.app.main:app --reload` (health check `/` returns 200 OK)
 - [x] Frontend placeholder loads: `npm run dev` (Vite)
-- [x] `docker-compose build` runs for both services
+- [x] `docker compose build` runs for both services
 - [x] Basic tests pass for backend and frontend
 
 ---

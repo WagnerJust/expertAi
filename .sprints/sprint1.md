@@ -60,8 +60,8 @@
 5.  **Docker Setup (Initial):**
     * `backend/Dockerfile`: For Python FastAPI app (e.g., `python:3.11-slim`, copy app, install dependencies via `pip install -r requirements.txt`).
     * `frontend/Dockerfile`: For React app (multi-stage: Node build, Nginx serve).
-    * `{CURRENT_WORKSPACE_DIR}/docker-compose.yml`: Services for `backend`, `frontend`. Define named volumes for `pdf_storage`, `sqlite_db_volume`, `vector_db_volume`. Map backend port (e.g., 8000) and frontend port (e.g., 3000 or 80).
-    * **Acceptance Criteria:** Dockerfiles exist; `docker-compose.yml` defines services and volumes.
+    * `{CURRENT_WORKSPACE_DIR}/docker compose.yml`: Services for `backend`, `frontend`. Define named volumes for `pdf_storage`, `sqlite_db_volume`, `vector_db_volume`. Map backend port (e.g., 8000) and frontend port (e.g., 3000 or 80).
+    * **Acceptance Criteria:** Dockerfiles exist; `docker compose.yml` defines services and volumes.
 
 6.  **Test Setup (TFD):**
     * Backend: Add `pytest`, `pytest-cov`, `httpx`, `pytest-asyncio` to `backend/requirements.txt` for development/testing.
@@ -80,5 +80,5 @@
 * Demonstration (live or screenshots/screencast):
     * Backend service starts via `uvicorn backend.app.main:app --reload` (showing health check endpoint `/` returning 200 OK).
     * Frontend placeholder page loads via `npm run dev` (or `yarn dev`).
-    * `docker-compose build` runs successfully for initial Dockerfiles.
+    * `docker compose build` runs successfully for initial Dockerfiles.
     * Basic tests pass for backend and frontend.
