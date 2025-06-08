@@ -10,7 +10,6 @@ venv/
 *.sqlite3
 *.sqlite
 .pytest_cache/
-*.gguf
 
 # Node
 node_modules/
