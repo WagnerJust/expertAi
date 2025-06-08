@@ -7,10 +7,23 @@ services:
       - pdf_storage:/app/data/pdfs
       - ./backend/db_data:/app/db_data  # Bind mount to local db_data directory
       - /Users/justin/LLMS/Contexts/PromptEngineering/:/app/initial_corpus:ro
+      - vector_db_volume:/app/data/vector_store  # ChromaDB storage
     ports:
       - "8000:8000"
     environment:
       - DB_URL=sqlite:///./db_data/local_database.sqlite
+    depends_on:
+      - llm-service
+
+  llm-service:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+
   frontend:
     build: ./frontend
     ports:
@@ -20,3 +33,4 @@ services:
 volumes:
   pdf_storage:
   vector_db_volume:
+  ollama_data:

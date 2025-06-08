@@ -5,8 +5,16 @@ import httpx
 from sqlalchemy.orm import Session
 from ..core.config import settings
 from ..models import db_models
-from typing import Optional
+from typing import Optional, Dict, Tuple
 import fitz  # PyMuPDF
+import logging
+
+# Import RAG components
+from ..rag_components.chunker import chunk_text
+from ..rag_components.embedder import generate_embeddings_for_chunks
+from ..rag_components.vector_store_interface import add_chunks_to_vector_store
+
+logger = logging.getLogger(__name__)
 
 def store_uploaded_pdf(collection_id: int, pdf_file: UploadFile) -> Path:
     base_path = Path(settings.pdf_dir) / str(collection_id)
@@ -34,6 +42,7 @@ def add_pdf_record_to_db(db: Session, title: str, filename: str, file_path: str,
     pdf_doc = db_models.PDFDocument(
         title=title,
         filename=filename,
+        file_path=file_path,
         status=status,
         collection_id=collection_id
     )
@@ -42,16 +51,135 @@ def add_pdf_record_to_db(db: Session, title: str, filename: str, file_path: str,
     db.refresh(pdf_doc)
     return pdf_doc
 
-def extract_text_from_pdf(pdf_path: Path) -> Optional[tuple[str, int]]:
+def extract_text_from_pdf(pdf_path: Path) -> Optional[Tuple[str, Dict]]:
+    """
+    Extract text from PDF and return text content with page information.
+    
+    Args:
+        pdf_path: Path to the PDF file
+        
+    Returns:
+        Tuple of (text_content, page_info_dict) or None if extraction fails
+    """
     try:
         doc = fitz.open(pdf_path)
-        text = "\n".join(page.get_text() for page in doc)
-        page_count = doc.page_count
+        
+        text_parts = []
+        page_info = {}
+        
+        for page_num, page in enumerate(doc):
+            page_text = page.get_text()
+            if page_text.strip():  # Only add non-empty pages
+                text_parts.append(page_text)
+                # Store page info for chunking (simple approach)
+                page_info[len(text_parts) - 1] = [page_num + 1]  # 1-indexed page numbers
+        
+        full_text = "\n".join(text_parts)
         doc.close()
-        return text, page_count
-    except Exception:
+        
+        return full_text, page_info
+    except Exception as e:
+        logger.error(f"Error extracting text from PDF {pdf_path}: {str(e)}")
         return None
 
 def filename_to_title(filename: str) -> str:
     name = os.path.splitext(filename)[0]
     return name.replace('_', ' ').replace('-', ' ').title()
+
+async def process_pdf_with_rag_pipeline(
+    db: Session,
+    pdf_record: db_models.PDFDocument,
+    pdf_path: Path
+) -> Dict:
+    """
+    Process a PDF through the complete RAG pipeline.
+    This includes text extraction, chunking, embedding generation, and ChromaDB storage.
+    
+    Args:
+        db: SQLAlchemy database session
+        pdf_record: The PDF database record
+        pdf_path: Path to the PDF file
+        
+    Returns:
+        Dictionary with processing results
+    """
+    try:
+        logger.info(f"Starting RAG pipeline processing for: {pdf_record.filename}")
+        
+        # Step 1: Extract text from PDF
+        extraction_result = extract_text_from_pdf(pdf_path)
+        if not extraction_result:
+            pdf_record.status = "failed"
+            db.commit()
+            return {
+                "success": False,
+                "error": "Failed to extract text from PDF",
+                "pdf_id": pdf_record.id
+            }
+        
+        text_content, page_info = extraction_result
+        
+        if not text_content.strip():
+            pdf_record.status = "failed"
+            db.commit()
+            return {
+                "success": False,
+                "error": "No text content found in PDF",
+                "pdf_id": pdf_record.id
+            }
+        
+        # Step 2: Chunk the text
+        chunks = chunk_text(
+            text_content=text_content,
+            article_title=pdf_record.title or pdf_record.filename,
+            pdf_filename=pdf_record.filename,
+            collection_id=str(pdf_record.collection_id),
+            pdf_db_id=pdf_record.id,
+            page_info=page_info
+        )
+        
+        if not chunks:
+            pdf_record.status = "failed"
+            db.commit()
+            return {
+                "success": False,
+                "error": "Failed to create chunks from PDF text",
+                "pdf_id": pdf_record.id
+            }
+        
+        logger.info(f"Created {len(chunks)} chunks from {pdf_record.filename}")
+        
+        # Step 3: Generate embeddings
+        chunks_with_embeddings = generate_embeddings_for_chunks(chunks)
+        
+        # Step 4: Store in ChromaDB
+        add_chunks_to_vector_store(
+            chroma_collection_name=settings.CHROMA_DEFAULT_COLLECTION_NAME,
+            chunks_with_embeddings=chunks_with_embeddings
+        )
+        
+        # Step 5: Update PDF status
+        pdf_record.status = "processed"
+        db.commit()
+        
+        logger.info(f"Successfully processed {pdf_record.filename} through RAG pipeline")
+        
+        return {
+            "success": True,
+            "pdf_id": pdf_record.id,
+            "filename": pdf_record.filename,
+            "chunks_created": len(chunks),
+            "text_length": len(text_content),
+            "message": f"Successfully processed {pdf_record.filename}"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error in RAG pipeline processing for {pdf_record.filename}: {str(e)}")
+        pdf_record.status = "failed"
+        db.commit()
+        
+        return {
+            "success": False,
+            "error": f"RAG pipeline processing failed: {str(e)}",
+            "pdf_id": pdf_record.id
+        }

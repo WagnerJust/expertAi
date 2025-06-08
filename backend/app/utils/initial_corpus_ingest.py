@@ -3,10 +3,12 @@ from pathlib import Path
 from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.db.session import SessionLocal, init_db
-from app.services import pdf_ingestion_service
 
 def ingest_initial_corpus(db: Session):
     print("[ingest_initial_corpus] Starting initial corpus ingestion...")
+    # Import here to avoid model loading during app startup
+    from app.services import pdf_ingestion_service
+    
     # init_db()  # No need to call here; already called in main.py before session creation
     print("[ingest_initial_corpus] DB session created.")
     # Check if default collection exists
