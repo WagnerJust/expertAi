@@ -17,25 +17,59 @@ from ..rag_components.vector_store_interface import add_chunks_to_vector_store
 logger = logging.getLogger(__name__)
 
 def store_uploaded_pdf(collection_id: int, pdf_file: UploadFile) -> Path:
-    base_path = Path(settings.pdf_dir) / str(collection_id)
-    base_path.mkdir(parents=True, exist_ok=True)
-    file_path = base_path / pdf_file.filename
-    with open(file_path, "wb") as f:
-        f.write(pdf_file.file.read())
-    return file_path
+    """Store uploaded PDF file in the designated directory structure."""
+    try:
+        base_path = Path(settings.pdf_dir) / str(collection_id)
+        base_path.mkdir(parents=True, exist_ok=True)
+        file_path = base_path / pdf_file.filename
+        
+        # Reset file pointer to beginning
+        pdf_file.file.seek(0)
+        
+        with open(file_path, "wb") as f:
+            content = pdf_file.file.read()
+            if not content:
+                raise ValueError(f"Empty file provided: {pdf_file.filename}")
+            f.write(content)
+        
+        logger.info(f"Successfully stored PDF: {file_path}")
+        return file_path
+    except Exception as e:
+        logger.error(f"Error storing uploaded PDF {pdf_file.filename}: {str(e)}")
+        raise
 
 def download_pdf_from_url(collection_id: int, url: str, filename: str) -> Optional[Path]:
+    """Download PDF from URL and store it in the designated directory structure."""
     base_path = Path(settings.pdf_dir) / str(collection_id)
     base_path.mkdir(parents=True, exist_ok=True)
     file_path = base_path / filename
+    
     try:
-        with httpx.stream("GET", url, timeout=10.0) as r:
+        logger.info(f"Downloading PDF from URL: {url}")
+        with httpx.stream("GET", url, timeout=30.0, follow_redirects=True) as r:
             r.raise_for_status()
+            
+            # Check if it's actually a PDF by content type
+            content_type = r.headers.get('content-type', '').lower()
+            if 'pdf' not in content_type and not filename.lower().endswith('.pdf'):
+                logger.warning(f"Downloaded content may not be PDF. Content-Type: {content_type}")
+            
             with open(file_path, "wb") as f:
-                for chunk in r.iter_bytes():
+                total_size = 0
+                for chunk in r.iter_bytes(chunk_size=8192):
                     f.write(chunk)
+                    total_size += len(chunk)
+                    # Basic size check to prevent huge downloads
+                    if total_size > 100 * 1024 * 1024:  # 100MB limit
+                        raise ValueError("PDF file too large (>100MB)")
+        
+        logger.info(f"Successfully downloaded PDF: {file_path} ({total_size} bytes)")
         return file_path
-    except Exception:
+        
+    except Exception as e:
+        logger.error(f"Error downloading PDF from {url}: {str(e)}")
+        if file_path.exists():
+            file_path.unlink()  # Clean up partial download
         return None
 
 def add_pdf_record_to_db(db: Session, title: str, filename: str, file_path: str, collection_id: int, status: str = "pending") -> db_models.PDFDocument:

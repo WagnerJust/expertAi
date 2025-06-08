@@ -4,6 +4,7 @@ from datetime import datetime
 
 class CollectionBase(BaseModel):
     name: str
+    description: Optional[str] = None
 
 class CollectionCreate(CollectionBase):
     pass
@@ -11,16 +12,18 @@ class CollectionCreate(CollectionBase):
 class Collection(CollectionBase):
     id: int
     created_at: datetime
-    class Config:
-        orm_mode = True
+    updated_at: datetime
+    model_config = {"from_attributes": True}
 
 class CollectionUpdate(BaseModel):
     name: Optional[str] = None
+    description: Optional[str] = None
 
 class PDFDocumentBase(BaseModel):
     filename: str
-    title: Optional[str]
-    status: str
+    title: Optional[str] = None
+    file_path: Optional[str] = None
+    status: str = "pending"
 
 class PDFDocumentCreate(PDFDocumentBase):
     collection_id: int
@@ -28,8 +31,9 @@ class PDFDocumentCreate(PDFDocumentBase):
 class PDFDocument(PDFDocumentBase):
     id: int
     collection_id: int
-    class Config:
-        orm_mode = True
+    created_at: datetime
+    updated_at: datetime
+    model_config = {"from_attributes": True}
 
 class QueryBase(BaseModel):
     text: str
@@ -41,8 +45,7 @@ class Query(QueryBase):
     id: int
     collection_id: int
     timestamp: datetime
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
 
 class AnswerBase(BaseModel):
     text: str
@@ -55,8 +58,7 @@ class AnswerCreate(AnswerBase):
 class Answer(AnswerBase):
     id: int
     query_id: int
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
 
 class FeedbackBase(BaseModel):
     rating: str
@@ -68,8 +70,7 @@ class FeedbackCreate(FeedbackBase):
 class Feedback(FeedbackBase):
     id: int
     answer_id: int
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
 
 class MsgDetail(BaseModel):
     detail: str

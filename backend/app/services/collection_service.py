@@ -5,7 +5,10 @@ from typing import List, Optional
 
 # Create a new collection
 def create_collection(db: Session, collection: schemas.CollectionCreate) -> db_models.Collection:
-    db_collection = db_models.Collection(name=collection.name)
+    db_collection = db_models.Collection(
+        name=collection.name,
+        description=collection.description
+    )
     db.add(db_collection)
     db.commit()
     db.refresh(db_collection)
@@ -26,6 +29,8 @@ def update_collection(db: Session, collection_id: int, collection_update: schema
         return None
     if collection_update.name is not None:
         db_collection.name = collection_update.name
+    if collection_update.description is not None:
+        db_collection.description = collection_update.description
     db.commit()
     db.refresh(db_collection)
     return db_collection

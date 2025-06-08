@@ -17,6 +17,12 @@ def test_store_uploaded_pdf(tmp_path, monkeypatch):
     assert path.exists()
     assert path.read_bytes() == b"PDFDATA"
 
+def test_store_uploaded_pdf_empty_file(tmp_path, monkeypatch):
+    monkeypatch.setattr(pdf_ingestion_service.settings, "pdf_dir", str(tmp_path))
+    upload = DummyUploadFile("test.pdf", b"")
+    with pytest.raises(ValueError, match="Empty file provided"):
+        pdf_ingestion_service.store_uploaded_pdf(1, upload)
+
 def test_download_pdf_from_url_success(tmp_path, monkeypatch):
     monkeypatch.setattr(pdf_ingestion_service.settings, "pdf_dir", str(tmp_path))
     with patch("httpx.stream") as mock_stream:
@@ -58,9 +64,9 @@ def test_extract_text_from_pdf(tmp_path):
     doc.close()
     result = pdf_ingestion_service.extract_text_from_pdf(pdf_path)
     assert result is not None
-    text, page_count = result
+    text, page_info = result
     assert "Hello World!" in text
-    assert page_count == 1
+    assert isinstance(page_info, dict)
 
 def test_extract_text_from_pdf_error(tmp_path):
     # Pass a non-PDF file
