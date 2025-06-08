@@ -25,6 +25,25 @@ This project is a full-stack application with a FastAPI backend and a React fron
 
 ---
 
+## Environment Configuration
+
+The project uses environment variables for configuration. Before running the application:
+
+1. **Copy the example environment file:**
+   ```sh
+   cp .env.example .env
+   ```
+
+2. **Update the `.env` file with your specific paths:**
+   - `INITIAL_CORPUS_PATH`: Path to directory containing PDFs to be automatically ingested on startup
+
+**Example `.env` configuration:**
+```env
+INITIAL_CORPUS_PATH=/Users/yourname/Documents/PDFs/InitialCorpus/
+```
+
+---
+
 ## Quickstart
 
 ### Option 1: Standard Docker Setup

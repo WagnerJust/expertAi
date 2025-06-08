@@ -6,7 +6,7 @@ services:
     volumes:
       - pdf_storage:/app/data/pdfs
       - ./backend/db_data:/app/db_data
-      - /Users/justin/LLMS/Contexts/PromptEngineering/:/app/initial_corpus:ro
+      - ${INITIAL_CORPUS_PATH}:/app/initial_corpus:ro
       - vector_db_volume:/app/data/vector_store
       - ./backend:/app  # Mount source code for development
     ports:

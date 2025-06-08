@@ -49,6 +49,8 @@ pnpm-lock.yaml
 .env.development.local
 .env.test.local
 .env.production.local
+# Exception: keep .env.example in the repository
+!.env.example
 
 # macOS
 .DS_Store

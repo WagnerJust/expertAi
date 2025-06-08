@@ -6,7 +6,7 @@ services:
     volumes:
       - pdf_storage:/app/data/pdfs
       - ./backend/db_data:/app/db_data  # Bind mount to local db_data directory
-      - /Users/justin/LLMS/Contexts/PromptEngineering/:/app/initial_corpus:ro
+      - ${INITIAL_CORPUS_PATH}:/app/initial_corpus:ro
       - vector_db_volume:/app/data/vector_store  # ChromaDB storage
     ports:
       - "0.0.0.0:8000:8000"  # Bind to all interfaces for Tailscale access
