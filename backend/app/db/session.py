@@ -4,7 +4,12 @@ from app.core.config import settings
 from app.models.db_models import Base
 from typing import Generator
 
-engine = create_engine(settings.db_url, connect_args={"check_same_thread": False})
+# PostgreSQL doesn't need check_same_thread like SQLite
+engine = create_engine(
+    settings.db_url,
+    pool_pre_ping=True,  # Verify connections before use
+    pool_recycle=300     # Recreate connections every 5 minutes
+)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Call this to create tables

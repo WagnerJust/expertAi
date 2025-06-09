@@ -10,7 +10,7 @@
         * Ensure clarity in service definitions, port mappings, and volume definitions.
         * Use environment variables for all configurable settings that might change between environments (even if only local development for now, it's good practice). Consider a `.env` file for `docker compose`.
         * Set sensible default resource limits (CPU, memory) for services, especially the backend service running the LLM, to prevent it from consuming all system resources on less powerful machines. Document how users might adjust these.
-        * Ensure named volumes are used correctly for all persistent data (SQLite DB, PDF files, Vector DB, LLM models if downloaded into a volume). Named volumes eliminate file permission issues.
+        * Ensure named volumes are used correctly for all persistent data (PostgreSQL DB, PDF files, ChromaDB Docker service, LLM models if downloaded into a volume). Named volumes eliminate file permission issues.
     * **Acceptance Criteria:** Dockerfiles and `docker compose.yml` are optimized, well-commented, and use best practices for local deployment. The application builds and runs reliably using `docker compose`.
 
 2.  **Build and Run Scripts:**
@@ -26,7 +26,7 @@
 3.  **Scalability, Limitations, and Future Work Document (`docs/SCALABILITY_LIMITATIONS_FUTURE.md`):**
     * **Scalability (Conceptual):**
         * Discuss potential bottlenecks for scaling to more users (concurrent API requests, LLM inference queueing), larger individual PDF files (parsing time, memory), and a significantly larger number of collections/PDFs (vector DB size, indexing time, metadata DB performance).
-        * Briefly suggest conceptual approaches for addressing these (e.g., API rate limiting, task queues for ingestion/indexing, more robust database solutions if scaling beyond SQLite, distributed vector DBs - though out of scope for local app).
+        * Briefly suggest conceptual approaches for addressing these (e.g., API rate limiting, task queues for ingestion/indexing, more robust database solutions if scaling beyond PostgreSQL, distributed vector DBs - though out of scope for local app).
     * **Limitations:**
         * Document known limitations of the current system:
             * OCR for scanned PDFs (if not implemented, state it's a limitation).

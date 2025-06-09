@@ -18,16 +18,20 @@ _chroma_client = None
 
 def initialize_vector_store():
     """
-    Initialize and return a persistent ChromaDB client.
-    Creates the database directory if it doesn't exist.
+    Initialize and return a ChromaDB HTTP client.
+    Uses Docker container for ChromaDB service.
     """
     global _chroma_client
     if _chroma_client is None:
         try:
-            # Ensure the directory exists
-            os.makedirs(os.path.dirname(settings.CHROMA_DB_PATH), exist_ok=True)
-            _chroma_client = chromadb.PersistentClient(path=settings.CHROMA_DB_PATH)
-            logger.info(f"Initialized ChromaDB client at: {settings.CHROMA_DB_PATH}")
+            # Use HTTP client to connect to Docker container
+            _chroma_client = chromadb.HttpClient(
+                host=settings.CHROMA_HTTP_HOST, 
+                port=settings.CHROMA_HTTP_PORT
+            )
+            # Test the connection
+            _chroma_client.heartbeat()
+            logger.info(f"Initialized ChromaDB HTTP client at: {settings.CHROMA_HTTP_HOST}:{settings.CHROMA_HTTP_PORT}")
         except Exception as e:
             logger.error(f"Failed to initialize ChromaDB client: {str(e)}")
             raise Exception(f"ChromaDB initialization failed: {str(e)}")
@@ -238,10 +242,16 @@ def get_collection_stats(chroma_collection_name: str) -> Dict[str, Any]:
         count = collection.count()
         
         return {
+            "success": True,
             "collection_name": chroma_collection_name,
             "total_chunks": count
         }
         
     except Exception as e:
         logger.error(f"Error getting collection stats: {str(e)}")
-        return {"collection_name": chroma_collection_name, "total_chunks": 0, "error": str(e)}
+        return {
+            "success": False,
+            "collection_name": chroma_collection_name, 
+            "total_chunks": 0, 
+            "error": str(e)
+        }

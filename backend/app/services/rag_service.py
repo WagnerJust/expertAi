@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 async def answer_question_from_collection(
     db: Session,
-    collection_id_sqlite: int,
+    collection_id: int,
     question_text: str,
     top_k: int = 5
 ) -> Dict:
@@ -28,7 +28,7 @@ async def answer_question_from_collection(
     
     Args:
         db: SQLAlchemy database session
-        collection_id_sqlite: SQLite collection ID
+        collection_id: Database collection ID
         question_text: The user's question
         top_k: Number of relevant chunks to retrieve
         
@@ -36,12 +36,12 @@ async def answer_question_from_collection(
         Dictionary with answer, sources, and metadata
     """
     try:
-        # Step 1: Get collection info from SQLite
-        collection = db.query(Collection).filter(Collection.id == collection_id_sqlite).first()
+        # Step 1: Get collection info from database
+        collection = db.query(Collection).filter(Collection.id == collection_id).first()
         if not collection:
             return {
                 "success": False,
-                "error": f"Collection with ID {collection_id_sqlite} not found",
+                "error": f"Collection with ID {collection_id} not found",
                 "answer": None,
                 "sources": [],
                 "collection_name": None
@@ -50,7 +50,7 @@ async def answer_question_from_collection(
         collection_name = collection.name
         collection_id_string = str(collection.id)  # Use as filter for ChromaDB
         
-        logger.info(f"Processing question for collection '{collection_name}' (ID: {collection_id_sqlite})")
+        logger.info(f"Processing question for collection '{collection_name}' (ID: {collection_id})")
         
         # Step 2: Generate question embedding
         embedding_model = get_embedding_model()
@@ -94,10 +94,10 @@ async def answer_question_from_collection(
             }
             sources.append(source_info)
         
-        # Step 8: Store query history in SQLite
+        # Step 8: Store query history in database
         try:
             query_history = QueryHistory(
-                collection_id=collection_id_sqlite,
+                collection_id=collection_id,
                 question_text=question_text,
                 answer_text=processed_answer,
                 sources_count=len(relevant_chunks),
@@ -129,27 +129,27 @@ async def answer_question_from_collection(
             "collection_name": None
         }
 
-async def get_collection_summary(db: Session, collection_id_sqlite: int) -> Dict:
+async def get_collection_summary(db: Session, collection_id: int) -> Dict:
     """
     Get a summary of what's available in a collection for Q&A.
     
     Args:
         db: SQLAlchemy database session
-        collection_id_sqlite: SQLite collection ID
+        collection_id: Database collection ID
         
     Returns:
         Dictionary with collection summary
     """
     try:
-        # Get collection from SQLite
-        collection = db.query(Collection).filter(Collection.id == collection_id_sqlite).first()
+        # Get collection from database
+        collection = db.query(Collection).filter(Collection.id == collection_id).first()
         if not collection:
             return {
                 "success": False,
-                "error": f"Collection with ID {collection_id_sqlite} not found"
+                "error": f"Collection with ID {collection_id} not found"
             }
         
-        # Get PDF count from SQLite
+        # Get PDF count from database
         pdf_count = len(collection.pdfs) if collection.pdfs else 0
         
         # Get chunk count from ChromaDB (if possible)
@@ -159,7 +159,7 @@ async def get_collection_summary(db: Session, collection_id_sqlite: int) -> Dict
         return {
             "success": True,
             "collection_name": collection.name,
-            "collection_id": collection_id_sqlite,
+            "collection_id": collection_id,
             "pdf_count": pdf_count,
             "total_chunks_in_chroma": chroma_stats.get("total_chunks", 0),
             "created_at": collection.created_at,
@@ -173,13 +173,13 @@ async def get_collection_summary(db: Session, collection_id_sqlite: int) -> Dict
             "error": f"Error getting collection summary: {str(e)}"
         }
 
-async def get_recent_queries(db: Session, collection_id_sqlite: int, limit: int = 10) -> List[Dict]:
+async def get_recent_queries(db: Session, collection_id: int, limit: int = 10) -> List[Dict]:
     """
     Get recent queries for a collection.
     
     Args:
         db: SQLAlchemy database session
-        collection_id_sqlite: SQLite collection ID
+        collection_id: Database collection ID
         limit: Number of recent queries to return
         
     Returns:
@@ -187,7 +187,7 @@ async def get_recent_queries(db: Session, collection_id_sqlite: int, limit: int 
     """
     try:
         queries = db.query(QueryHistory)\
-            .filter(QueryHistory.collection_id == collection_id_sqlite)\
+            .filter(QueryHistory.collection_id == collection_id)\
             .order_by(QueryHistory.timestamp.desc())\
             .limit(limit)\
             .all()

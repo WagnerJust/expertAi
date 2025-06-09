@@ -46,7 +46,7 @@ async def ask_question(
     # Process the question through RAG pipeline
     result = await answer_question_from_collection(
         db=db,
-        collection_id_sqlite=request.collection_id,
+        collection_id=request.collection_id,
         question_text=validation["cleaned_question"],
         top_k=request.top_k
     )
@@ -65,7 +65,7 @@ async def get_collection_qa_summary(
     Get a summary of a collection for Q&A purposes.
     Shows how many documents and chunks are available.
     """
-    result = await get_collection_summary(db=db, collection_id_sqlite=collection_id)
+    result = await get_collection_summary(db=db, collection_id=collection_id)
     
     if not result["success"]:
         raise HTTPException(status_code=404, detail=result.get("error", "Collection not found"))
@@ -83,7 +83,7 @@ async def get_collection_recent_queries(
     """
     queries = await get_recent_queries(
         db=db,
-        collection_id_sqlite=collection_id,
+        collection_id=collection_id,
         limit=limit
     )
     
@@ -103,7 +103,7 @@ async def admin_reindex_collection(
     Admin endpoint: Re-index all documents in a collection.
     This will clear existing embeddings and rebuild them from scratch.
     """
-    result = await reindex_collection(db=db, collection_id_sqlite=collection_id)
+    result = await reindex_collection(db=db, collection_id=collection_id)
     
     if not result["success"]:
         raise HTTPException(status_code=500, detail=result.get("error", "Re-indexing failed"))
@@ -122,7 +122,7 @@ async def admin_reindex_collection_batch(
     """
     result = await reindex_collection_batch(
         db=db, 
-        collection_id_sqlite=collection_id,
+        collection_id=collection_id,
         batch_size=batch_size
     )
     

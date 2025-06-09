@@ -153,7 +153,7 @@ volumes:
 7. **Context Assembly** → Relevant chunks with source attribution
 8. **Answer Generation** → Local LLM with structured prompts
 9. **Response Processing** → Cleaned answers with fallback logic
-10. **History Storage** → Query tracking in SQLite database
+10. **History Storage** → Query tracking in PostgreSQL database
 
 ### Key Configuration Settings
 ```python

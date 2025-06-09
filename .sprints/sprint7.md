@@ -64,7 +64,7 @@
         * How to configure and manage the initial PDF directory.
         * Detailed explanation of adding/managing collections and PDFs via the UI.
         * Details on the manual re-indexing process (triggered via UI), its impact, and when to use it.
-        * Explanation of Docker named volume management for PDFs, collection metadata (SQLite DB), vector DB, user feedback, and query history (eliminates permission issues).
+        * Explanation of Docker named volume management for PDFs, collection metadata (PostgreSQL DB), ChromaDB Docker service, user feedback, and query history (eliminates permission issues).
     * **`docs/TESTING_STRATEGY.md`:**
         * Overview of the TFD approach implemented.
         * Types of tests implemented (unit, integration, E2E).

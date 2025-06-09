@@ -1,5 +1,5 @@
 import pytest
-from backend.app.rag_components.chunker import chunk_text, Chunk
+from app.rag_components.chunker import chunk_text, Chunk
 
 @pytest.fixture
 def sample_text():

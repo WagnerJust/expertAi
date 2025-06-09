@@ -21,14 +21,14 @@
       python3.11 -m venv venv
       source venv/bin/activate
       ```
-    * Create `backend/requirements.txt` and add dependencies: `fastapi`, `uvicorn`, `pydantic`, `sqlalchemy`, `python-multipart`, `alembic`, and `pytest` for testing.
+    * Create `backend/requirements.txt` and add dependencies: `fastapi`, `uvicorn`, `pydantic`, `sqlalchemy`, `psycopg2-binary`, `python-multipart`, `alembic`, and `pytest` for testing.
     * Install dependencies:
       ```bash
       pip install -r requirements.txt
       ```
     * Create `backend/app/` and subdirectories: `core/`, `apis/v1/`, `services/`, `models/`, `db/`, `rag_components/`, `utils/`. Add `__init__.py` to all.
     * `backend/app/main.py`: Basic FastAPI app, root health check endpoint (`/`).
-    * `backend/app/core/config.py`: Settings class (e.g., `Settings(BaseSettings)` from Pydantic-settings) for initial PDF dir, DB URL (`sqlite:///./local_database.sqlite`).
+    * `backend/app/core/config.py`: Settings class (e.g., `Settings(BaseSettings)` from Pydantic-settings) for initial PDF dir, DB URL (`postgresql://llm_user:llm_password@localhost:5432/llm_db`).
     * `backend/app/models/schemas.py`: Pydantic models for:
         * `CollectionBase`, `CollectionCreate`, `Collection` (ID, name, created\_at)
         * `PDFDocumentBase`, `PDFDocumentCreate`, `PDFDocument` (ID, filename, title, collection\_id, status [e.g., "pending", "processed", "error"])
@@ -37,7 +37,7 @@
         * `FeedbackBase`, `FeedbackCreate`, `Feedback` (ID, answer\_id, rating [e.g., "up", "down"], comment [optional])
         * Generic API response models (e.g., `MsgDetail`).
     * `backend/app/models/db_models.py`: SQLAlchemy ORM models mirroring schemas (Collection, PDFDocument, QueryHistory, AnswerFeedback). Define relationships. `QueryHistory` could store question, answer, context, sources, and link to `AnswerFeedback`.
-    * `backend/app/db/session.py` (or similar): SQLAlchemy engine, `SessionLocal`, `Base` for ORM models. Function to create initial DB tables (e.g., `Base.metadata.create_all(bind=engine)`). (Alembic for migrations can be set up here too, add `alembic` to Poetry).
+    * `backend/app/db/session.py` (or similar): SQLAlchemy engine, `SessionLocal`, `Base` for ORM models. Function to create initial DB tables (e.g., `Base.metadata.create_all(bind=engine)`). (Alembic for migrations can be set up here too, add `alembic` to Poetry). PostgreSQL connection with pool settings for production use.
     * **Acceptance Criteria:** Backend structure created; FastAPI app runs with `/` endpoint; Pydantic/SQLAlchemy models defined; DB session setup; initial DB schema can be created.
 
 3.  **Frontend Setup (React):**
@@ -60,8 +60,8 @@
 5.  **Docker Setup (Initial):**
     * `backend/Dockerfile`: For Python FastAPI app (e.g., `python:3.11-slim`, copy app, install dependencies via `pip install -r requirements.txt`).
     * `frontend/Dockerfile`: For React app (multi-stage: Node build, Nginx serve).
-    * `{CURRENT_WORKSPACE_DIR}/docker compose.yml`: Services for `backend`, `frontend`. Define named volumes for `pdf_storage`, `db_volume` (for SQLite database), `vector_db_volume`, `ollama_data`. Use named volumes instead of bind mounts to eliminate permission issues with SQLite database files.
-    * **Acceptance Criteria:** Dockerfiles exist; `docker compose.yml` defines services and named volumes (no permission issues).
+    * `{CURRENT_WORKSPACE_DIR}/docker compose.yml`: Services for `backend`, `frontend`, `postgres`. Define named volumes for `pdf_storage`, `postgres_data` (for PostgreSQL database), `vector_db_volume`, `ollama_data`. Use named volumes instead of bind mounts to eliminate permission issues with database files.
+    * **Acceptance Criteria:** Dockerfiles exist; `docker compose.yml` defines services including PostgreSQL and named volumes (no permission issues).
 
 6.  **Test Setup (TFD):**
     * Backend: Add `pytest`, `pytest-cov`, `httpx`, `pytest-asyncio` to `backend/requirements.txt` for development/testing.
@@ -74,7 +74,7 @@
 
 * Access to the Git repository with the initial commit for Sprint 1.
 * A document (`SPRINT_1_REVIEW.md`) briefly outlining:
-    * Confirmed System Architecture and Technology Stack (Python/FastAPI, React, SQLite, Docker, Poetry, chosen PDF/Embedding/LLM libraries - even if not yet implemented).
+    * Confirmed System Architecture and Technology Stack (Python/FastAPI, React, PostgreSQL, Docker, chosen PDF/Embedding/LLM libraries - even if not yet implemented).
     * Initial API Contract Design (summary of endpoints and Pydantic models, link to where `openapi.json` will be available).
     * Basic Database Schema (description of tables derived from `db_models.py`).
 * Demonstration (live or screenshots/screencast):

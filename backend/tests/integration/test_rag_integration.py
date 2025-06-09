@@ -9,9 +9,9 @@ import os
 sys.path.append('/Users/justin/LLMS/App/backend')
 
 from app.db.session import get_db
-from app.services.rag_service import validate_question, get_collection_summary
-from app.rag_components.vector_store_interface import VectorStoreInterface
-from app.rag_components.embedder import EmbeddingGenerator
+from app.services.rag_service import validate_question
+from app.rag_components.vector_store_interface import initialize_vector_store, get_or_create_collection
+from app.rag_components.embedder import get_embedding_model
 import asyncio
 
 async def test_rag_components():
@@ -94,7 +94,7 @@ async def test_rag_components():
         db = next(get_db())
         
         # Test get_collection_summary with a non-existent collection
-        result = await get_collection_summary(db=db, collection_id_sqlite=999)
+        result = await get_collection_summary(db=db, collection_id=999)
         print(f"   ✅ Collection summary for non-existent collection: {result['success']}")
         
         db.close()

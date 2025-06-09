@@ -18,7 +18,7 @@
 2.  **Query History API Endpoint (Backend):**
     * Implement the API endpoint in `backend/app/apis/v1/router_qa.py`:
         * `GET /collections/{collection_id}/history`:
-            * Retrieves persistent query history (e.g., questions, answers, sources, timestamps) for the specified `collection_id` from the SQLite database (`QueryHistory` table).
+            * Retrieves persistent query history (e.g., questions, answers, sources, timestamps) for the specified `collection_id` from the PostgreSQL database (`QueryHistory` table).
             * Returns a list of `QueryHistoryResponse` Pydantic schemas.
     * **TFD:**
         * Write integration tests for the query history API endpoint, ensuring correct data retrieval and filtering by collection.
@@ -35,17 +35,18 @@
     * **Acceptance Criteria:** Backend API for submitting feedback on answers is implemented, tested, and stores feedback associated with a specific answer.
 
 4.  **Admin API Endpoint - Manual Re-indexing (Backend - Full Implementation):**
-    * Fully implement the re-indexing logic in `backend/app/services/admin_service.py` (or `collection_service.py`) as designed in Sprint 3.
+    * Fully implement the re-indexing logic in `backend/app/services/admin_service.py` (or `collection_service.py`) as designed in Sprint 3 with **ChromaDB Docker service**.
     * Implement the API endpoint in `backend/app/apis/v1/router_admin.py`:
-        * `POST /admin/collections/{collection_id}/reindex`: Triggers the re-indexing process for the specified collection. This should be an asynchronous task or clearly communicate it's a long-running process. For simplicity in a first pass, it can be synchronous, but note this as a potential improvement.
+        * `POST /admin/collections/{collection_id}/reindex`: Triggers the re-indexing process for the specified collection using **ChromaDB Docker HTTP client**. This should be an asynchronous task or clearly communicate it's a long-running process. For simplicity in a first pass, it can be synchronous, but note this as a potential improvement.
     * **TFD:**
-        * Write integration tests for the re-indexing API endpoint. This test might be longer running and require careful setup (e.g., a small collection with a few PDFs) and verification of the vector store state before and after.
-    * **Acceptance Criteria:** The manual re-indexing API endpoint is fully implemented and tested, successfully clearing and reprocessing all documents in a specified collection.
+        * Write integration tests for the re-indexing API endpoint. This test might be longer running and require careful setup (e.g., a small collection with a few PDFs) and verification of the **ChromaDB Docker service** state before and after.
+    * **Acceptance Criteria:** The manual re-indexing API endpoint is fully implemented and tested, successfully clearing and reprocessing all documents in a specified collection using **ChromaDB Docker service**.
 
 5.  **Finalize Backend Dockerfile & docker compose.yml:**
     * Ensure all necessary models (embedding, LLM if packaged) are either baked into the Docker image (if small enough and licensed appropriately) or correctly downloaded/mounted during container startup. For LLMs, it's often better to mount them from the host due to size.
-    * Configure environment variables in `docker compose.yml` for all paths (PDFs, SQLite DB, Vector DB, LLM models, embedding models) and ensure they are read by `backend/app/core/config.py`.
+    * Configure environment variables in `docker compose.yml` for all paths (PDFs, PostgreSQL DB, **ChromaDB Docker service connection**, LLM models, embedding models) and ensure they are read by `backend/app/core/config.py`.
     * Review resource allocations (memory, CPU) for the backend service in `docker compose.yml`, especially considering LLM and embedding model requirements.
+    * **Note:** ChromaDB is now running as a separate Docker service with HTTP client communication (eliminates permission issues).
     * **Backend Python Environment Setup:**
         * Ensure Python 3.11 is installed and accessible (e.g., via `pyenv global 3.11.x` or by having it in your PATH).
         * Create a new virtual environment for Python 3.11:
@@ -58,7 +59,7 @@
           ```bash
           pip install -r requirements.txt
           ```
-    * **Acceptance Criteria:** Backend Docker configuration is finalized, uses environment variables for paths, and manages model files effectively. `docker compose up` successfully starts the fully configured backend.
+    * **Acceptance Criteria:** Backend Docker configuration is finalized, uses environment variables for paths, and manages model files effectively. **ChromaDB Docker service** is properly configured and accessible. `docker compose up` successfully starts the fully configured backend with all services (backend, ChromaDB, Ollama, PostgreSQL).
 
 6.  **Generate/Update & Document OpenAPI Specification:**
     * Ensure FastAPI (`/openapi.json`) auto-generates an accurate and complete specification for all implemented V1 API endpoints.

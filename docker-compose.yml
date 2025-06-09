@@ -5,15 +5,35 @@ services:
     working_dir: /app
     volumes:
       - pdf_storage:/app/data/pdfs
-      - db_volume:/app/db_data
       - ${INITIAL_CORPUS_PATH}:/app/initial_corpus:ro
       - vector_db_volume:/app/data/vector_store  # ChromaDB storage
     ports:
       - "0.0.0.0:8000:8000"  # Bind to all interfaces for Tailscale access
     environment:
-      - DB_URL=sqlite:///./db_data/local_database.sqlite
+      - DB_URL=postgresql://llm_user:llm_password@postgres:5432/llm_db
+      - POSTGRES_DB=llm_db
+      - POSTGRES_USER=llm_user
+      - POSTGRES_PASSWORD=llm_password
     depends_on:
+      - postgres
       - llm-service
+      - chroma  # Add dependency on ChromaDB
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=llm_db
+      - POSTGRES_USER=llm_user
+      - POSTGRES_PASSWORD=llm_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"  # Expose for development/debugging
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U llm_user -d llm_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   llm-service:
     image: ollama/ollama:latest
@@ -30,8 +50,25 @@ services:
       - "0.0.0.0:3000:80"  # Bind to all interfaces for Tailscale access
     depends_on:
       - backend
+
+  chroma:
+    image: chromadb/chroma
+    volumes:
+      - chroma_data:/data
+    ports:
+      - "8001:8000"  # ChromaDB HTTP API
+    environment:
+      - CHROMA_DB_IMPL=duckdb+parquet
+      - PERSIST_DIRECTORY=/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v2/heartbeat"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
 volumes:
   pdf_storage:
   vector_db_volume:
   ollama_data:
-  db_volume:
+  postgres_data:  # PostgreSQL data volume
+  chroma_data:

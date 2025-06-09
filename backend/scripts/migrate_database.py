@@ -1,16 +1,24 @@
 #!/usr/bin/env python3
 """
-Database Migration Script for Sprint 3 RAG Implementation
-Updates database schema to support new RAG features
+DEPRECATED: This file was for SQLite migrations and is no longer needed.
+The application now uses PostgreSQL with automatic schema management via SQLAlchemy.
+
+For PostgreSQL migration, use:
+- backend/migrate_to_postgres.py
+- backend/app/migrate_to_postgres.py  
+- backend/db_manager.py
+
+This file is kept for reference but should not be used.
 """
 
-import sqlite3
 import sys
-from datetime import datetime
 
 def migrate_database():
-    """Run database migration"""
-    db_path = "db_data/local_database.sqlite"
+    """DEPRECATED: No longer used - PostgreSQL handles schema automatically"""
+    print("❌ This migration script is deprecated.")
+    print("📚 The application now uses PostgreSQL with automatic schema management.")
+    print("🔧 Use 'python db_manager.py init' instead to initialize PostgreSQL schema.")
+    return False
     
     try:
         conn = sqlite3.connect(db_path)
@@ -145,19 +153,6 @@ def migrate_database():
         pdf_cols = [col[1] for col in cursor.fetchall()]
         print(f"PDF documents columns: {pdf_cols}")
         
-        cursor.execute("PRAGMA table_info(query_history);")
-        query_cols = [col[1] for col in cursor.fetchall()]
-        print(f"Query history columns: {query_cols}")
-        
-    except Exception as e:
-        print(f"❌ Migration failed: {e}")
-        conn.rollback()
-        return False
-    finally:
-        conn.close()
-    
-    return True
-
 if __name__ == "__main__":
     success = migrate_database()
     sys.exit(0 if success else 1)

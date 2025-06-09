@@ -5,17 +5,36 @@ services:
     working_dir: /app
     volumes:
       - pdf_storage:/app/data/pdfs
-      - db_volume:/app/db_data
       - ${INITIAL_CORPUS_PATH}:/app/initial_corpus:ro
       - vector_db_volume:/app/data/vector_store
       - ./backend:/app  # Mount source code for development
     ports:
       - "0.0.0.0:8000:8000"
     environment:
-      - DB_URL=sqlite:///./db_data/local_database.sqlite
+      - DB_URL=postgresql://llm_user:llm_password@postgres:5432/llm_db
+      - POSTGRES_DB=llm_db
+      - POSTGRES_USER=llm_user
+      - POSTGRES_PASSWORD=llm_password
     depends_on:
+      - postgres
       - llm-service
     command: ["python", "start_server.py"]  # Use development server with hot reload
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=llm_db
+      - POSTGRES_USER=llm_user
+      - POSTGRES_PASSWORD=llm_password
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"  # Expose for development/debugging
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U llm_user -d llm_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   llm-service:
     image: ollama/ollama:latest
@@ -44,4 +63,4 @@ volumes:
   pdf_storage:
   vector_db_volume:
   ollama_data:
-  db_volume:
+  postgres_data_dev:  # PostgreSQL data volume for development

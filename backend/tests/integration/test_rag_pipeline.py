@@ -9,15 +9,15 @@ import shutil
 from pathlib import Path
 from unittest.mock import patch, AsyncMock, MagicMock
 
-from backend.app.rag_components.chunker import chunk_text, Chunk
-from backend.app.rag_components.embedder import generate_embeddings_for_chunks
-from backend.app.rag_components.vector_store_interface import (
+from app.rag_components.chunker import chunk_text, Chunk
+from app.rag_components.embedder import generate_embeddings_for_chunks
+from app.rag_components.vector_store_interface import (
     add_chunks_to_vector_store,
     search_relevant_chunks,
     initialize_vector_store
 )
-from backend.app.services.pdf_ingestion_service import extract_text_from_pdf
-from backend.app.core.config import settings
+from app.services.pdf_ingestion_service import extract_text_from_pdf
+from app.core.config import settings
 
 class TestRAGPipelineIntegration:
     

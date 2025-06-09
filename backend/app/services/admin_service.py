@@ -23,31 +23,31 @@ from ..core.config import settings
 
 logger = logging.getLogger(__name__)
 
-async def reindex_collection(db: Session, collection_id_sqlite: int) -> Dict:
+async def reindex_collection(db: Session, collection_id: int) -> Dict:
     """
     Completely re-index a collection by re-processing all PDFs.
     This clears existing ChromaDB data and rebuilds it from scratch.
     
     Args:
         db: SQLAlchemy database session
-        collection_id_sqlite: SQLite collection ID to re-index
+        collection_id: Database collection ID to re-index
         
     Returns:
         Dictionary with re-indexing results
     """
     try:
-        # Step 1: Get collection info from SQLite
-        collection = db.query(Collection).filter(Collection.id == collection_id_sqlite).first()
+        # Step 1: Get collection info from database
+        collection = db.query(Collection).filter(Collection.id == collection_id).first()
         if not collection:
             return {
                 "success": False,
-                "error": f"Collection with ID {collection_id_sqlite} not found"
+                "error": f"Collection with ID {collection_id} not found"
             }
         
         collection_name = collection.name
         collection_id_string = str(collection.id)
         
-        logger.info(f"Starting re-indexing for collection '{collection_name}' (ID: {collection_id_sqlite})")
+        logger.info(f"Starting re-indexing for collection '{collection_name}' (ID: {collection_id})")
         
         # Step 2: Clear existing ChromaDB data for this collection
         delete_collection_data_from_vector_store(
@@ -56,7 +56,7 @@ async def reindex_collection(db: Session, collection_id_sqlite: int) -> Dict:
         )
         
         # Step 3: Get all PDFs in this collection
-        pdfs = db.query(PDF).filter(PDF.collection_id == collection_id_sqlite).all()
+        pdfs = db.query(PDF).filter(PDF.collection_id == collection_id).all()
         
         if not pdfs:
             logger.info(f"No PDFs found in collection '{collection_name}'")
@@ -238,7 +238,7 @@ def get_system_stats(db: Session) -> Dict:
     try:
         from ..rag_components.vector_store_interface import get_collection_stats
         
-        # Get SQLite stats
+        # Get database stats
         total_collections = db.query(Collection).count()
         total_pdfs = db.query(PDF).count()
         
@@ -247,7 +247,7 @@ def get_system_stats(db: Session) -> Dict:
         
         return {
             "success": True,
-            "sqlite_stats": {
+            "database_stats": {
                 "total_collections": total_collections,
                 "total_pdfs": total_pdfs
             },
@@ -263,31 +263,31 @@ def get_system_stats(db: Session) -> Dict:
             "error": f"Failed to get system stats: {str(e)}"
         }
 
-async def reindex_collection_batch(db: Session, collection_id_sqlite: int, batch_size: int = 10) -> Dict:
+async def reindex_collection_batch(db: Session, collection_id: int, batch_size: int = 10) -> Dict:
     """
     Re-index a collection by processing PDFs in batches for better performance and error handling.
     
     Args:
         db: SQLAlchemy database session
-        collection_id_sqlite: SQLite collection ID to re-index
+        collection_id: Database collection ID to re-index
         batch_size: Number of PDFs to process in each batch
         
     Returns:
         Dictionary with re-indexing results
     """
     try:
-        # Step 1: Get collection info from SQLite
-        collection = db.query(Collection).filter(Collection.id == collection_id_sqlite).first()
+        # Step 1: Get collection info from database
+        collection = db.query(Collection).filter(Collection.id == collection_id).first()
         if not collection:
             return {
                 "success": False,
-                "error": f"Collection with ID {collection_id_sqlite} not found"
+                "error": f"Collection with ID {collection_id} not found"
             }
         
         collection_name = collection.name
         collection_id_string = str(collection.id)
         
-        logger.info(f"Starting batch re-indexing for collection '{collection_name}' (ID: {collection_id_sqlite})")
+        logger.info(f"Starting batch re-indexing for collection '{collection_name}' (ID: {collection_id})")
         
         # Step 2: Clear existing ChromaDB data for this collection
         try:
@@ -300,7 +300,7 @@ async def reindex_collection_batch(db: Session, collection_id_sqlite: int, batch
             logger.warning(f"Error clearing ChromaDB data: {str(e)} - continuing anyway")
         
         # Step 3: Get all PDFs in this collection
-        pdfs = db.query(PDF).filter(PDF.collection_id == collection_id_sqlite).all()
+        pdfs = db.query(PDF).filter(PDF.collection_id == collection_id).all()
         
         if not pdfs:
             logger.info(f"No PDFs found in collection '{collection_name}'")

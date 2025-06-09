@@ -8,7 +8,7 @@ import shutil
 from unittest.mock import patch, MagicMock
 from pathlib import Path
 
-from backend.app.rag_components.vector_store_interface import (
+from app.rag_components.vector_store_interface import (
     initialize_vector_store,
     get_or_create_collection,
     add_chunks_to_vector_store,
@@ -17,7 +17,7 @@ from backend.app.rag_components.vector_store_interface import (
     delete_pdf_chunks_from_vector_store,
     get_collection_stats
 )
-from backend.app.rag_components.chunker import Chunk
+from app.rag_components.chunker import Chunk
 
 class TestVectorStoreInterface:
     """Test suite for vector store interface operations."""
@@ -65,7 +65,7 @@ class TestVectorStoreInterface:
     
     def test_initialize_vector_store(self, temp_db_path):
         """Test ChromaDB client initialization."""
-        with patch('backend.app.core.config.settings.CHROMA_DB_PATH', temp_db_path):
+        with patch('app.core.config.settings.CHROMA_DB_PATH', temp_db_path):
             client = initialize_vector_store()
             assert client is not None
             
@@ -75,7 +75,7 @@ class TestVectorStoreInterface:
     
     def test_get_or_create_collection(self, temp_db_path):
         """Test collection creation and retrieval."""
-        with patch('backend.app.core.config.settings.CHROMA_DB_PATH', temp_db_path):
+        with patch('app.core.config.settings.CHROMA_DB_PATH', temp_db_path):
             collection = get_or_create_collection("test_collection")
             assert collection is not None
             assert collection.name == "test_collection"
@@ -86,7 +86,7 @@ class TestVectorStoreInterface:
     
     def test_add_chunks_to_vector_store(self, temp_db_path, sample_chunks, sample_embeddings):
         """Test adding chunks with embeddings to ChromaDB."""
-        with patch('backend.app.core.config.settings.CHROMA_DB_PATH', temp_db_path):
+        with patch('app.core.config.settings.CHROMA_DB_PATH', temp_db_path):
             chunks_with_embeddings = list(zip(sample_chunks, sample_embeddings))
             
             # Should not raise any exceptions
@@ -98,7 +98,7 @@ class TestVectorStoreInterface:
     
     def test_search_relevant_chunks(self, temp_db_path, sample_chunks, sample_embeddings):
         """Test searching for relevant chunks."""
-        with patch('backend.app.core.config.settings.CHROMA_DB_PATH', temp_db_path):
+        with patch('app.core.config.settings.CHROMA_DB_PATH', temp_db_path):
             # First add some chunks
             chunks_with_embeddings = list(zip(sample_chunks, sample_embeddings))
             add_chunks_to_vector_store("test_collection", chunks_with_embeddings)
@@ -116,7 +116,7 @@ class TestVectorStoreInterface:
     
     def test_search_with_collection_filter(self, temp_db_path, sample_chunks, sample_embeddings):
         """Test searching with collection ID filter."""
-        with patch('backend.app.core.config.settings.CHROMA_DB_PATH', temp_db_path):
+        with patch('app.core.config.settings.CHROMA_DB_PATH', temp_db_path):
             # Add chunks with different collection IDs
             chunks_with_embeddings = list(zip(sample_chunks, sample_embeddings))
             add_chunks_to_vector_store("test_collection", chunks_with_embeddings)
@@ -134,7 +134,7 @@ class TestVectorStoreInterface:
     
     def test_delete_collection_data(self, temp_db_path, sample_chunks, sample_embeddings):
         """Test deleting data by collection ID."""
-        with patch('backend.app.core.config.settings.CHROMA_DB_PATH', temp_db_path):
+        with patch('app.core.config.settings.CHROMA_DB_PATH', temp_db_path):
             # Add chunks
             chunks_with_embeddings = list(zip(sample_chunks, sample_embeddings))
             add_chunks_to_vector_store("test_collection", chunks_with_embeddings)
@@ -151,7 +151,7 @@ class TestVectorStoreInterface:
     
     def test_delete_pdf_chunks(self, temp_db_path, sample_chunks, sample_embeddings):
         """Test deleting chunks by PDF ID."""
-        with patch('backend.app.core.config.settings.CHROMA_DB_PATH', temp_db_path):
+        with patch('app.core.config.settings.CHROMA_DB_PATH', temp_db_path):
             # Add chunks
             chunks_with_embeddings = list(zip(sample_chunks, sample_embeddings))
             add_chunks_to_vector_store("test_collection", chunks_with_embeddings)
@@ -166,25 +166,23 @@ class TestVectorStoreInterface:
             # Verify data is deleted
             assert collection.count() == 0
     
-    def test_get_collection_stats(self, temp_db_path, sample_chunks, sample_embeddings):
+    def test_get_collection_stats(self, sample_chunks, sample_embeddings):
         """Test getting collection statistics."""
-        with patch('backend.app.core.config.settings.CHROMA_DB_PATH', temp_db_path):
-            # Add chunks
-            chunks_with_embeddings = list(zip(sample_chunks, sample_embeddings))
-            add_chunks_to_vector_store("test_collection", chunks_with_embeddings)
-            
-            # Get stats
-            stats = get_collection_stats("test_collection")
-            
-            assert stats["success"] is True
-            assert stats["collection_name"] == "test_collection"
-            assert stats["total_chunks"] == 2
+        # Add chunks
+        chunks_with_embeddings = list(zip(sample_chunks, sample_embeddings))
+        add_chunks_to_vector_store("test_collection", chunks_with_embeddings)
+        
+        # Get stats
+        stats = get_collection_stats("test_collection")
+        
+        assert stats["success"] is True
+        assert stats["collection_name"] == "test_collection"
+        assert stats["total_chunks"] == 2
     
-    def test_empty_chunks_list(self, temp_db_path):
+    def test_empty_chunks_list(self):
         """Test handling of empty chunks list."""
-        with patch('backend.app.core.config.settings.CHROMA_DB_PATH', temp_db_path):
-            # Should not raise any exceptions
-            add_chunks_to_vector_store("test_collection", [])
-            
-            collection = get_or_create_collection("test_collection")
-            assert collection.count() == 0
+        # Should not raise any exceptions
+        add_chunks_to_vector_store("test_collection", [])
+        
+        collection = get_or_create_collection("test_collection")
+        assert collection.count() == 0
